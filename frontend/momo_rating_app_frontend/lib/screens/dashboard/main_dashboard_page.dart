@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:momo_rating_app_frontend/viewmodel/dashboard_view_model.dart';
+import 'package:momo_rating_app_frontend/viewmodel/viewmodel/dashboard_view_model.dart';
 
 class MainDashboard extends ConsumerStatefulWidget {
   const MainDashboard({super.key});

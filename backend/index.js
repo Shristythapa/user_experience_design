@@ -49,3 +49,7 @@ app.use("/api/user", require("./routes/userRoutes"));
 
 // app.use("/api/user", require("./routes/preferenceRoutes"));
 app.use("/api/momo", require("./routes/momoRoutes"));
+
+app.use("/api/ratings", require("./routes/ratingRouter"));
+
+app.use("/api/saveMomo", require("./routes/saveMomoRoutes"));

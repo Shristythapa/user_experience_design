@@ -1,6 +1,6 @@
 import 'package:momo_rating_app_frontend/screens/add/add_momo.dart';
 import 'package:momo_rating_app_frontend/screens/auth/signup.dart';
-import 'package:momo_rating_app_frontend/screens/landing.dart';
+import 'package:momo_rating_app_frontend/screens/startings/landing.dart';
 import 'package:momo_rating_app_frontend/screens/auth/login.dart';
 
 class AppRoutes {

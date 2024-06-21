@@ -1,39 +1,39 @@
 import 'package:momo_rating_app_frontend/model/momo/momo_model.dart';
 
-class MoMoState {
+class SaveMomoState {
   final bool isLoading;
   final bool isError;
-  final List<MoMoApiModel> momo;
+  final List<MoMoApiModel> momos;
   final bool showMessage;
   final String message;
 
-  MoMoState({
-    required this.isError,
+  SaveMomoState({
     required this.isLoading,
-    required this.momo,
+    required this.isError,
+    required this.momos,
     required this.showMessage,
     required this.message,
   });
 
-  factory MoMoState.initialState() => MoMoState(
-        isError: false,
+  factory SaveMomoState.initialState() => SaveMomoState(
         isLoading: false,
-        momo: [],
+        isError: false,
+        momos: [],
         showMessage: false,
         message: "",
       );
 
-  MoMoState copyWith({
-    bool? isError,
+  SaveMomoState copyWith({
     bool? isLoading,
-    List<MoMoApiModel>? momo,
+    bool? isError,
+    List<MoMoApiModel>? momos,
     bool? showMessage,
     String? message,
   }) {
-    return MoMoState(
-      isError: isError ?? this.isError,
+    return SaveMomoState(
       isLoading: isLoading ?? this.isLoading,
-      momo: momo ?? this.momo,
+      isError: isError ?? this.isError,
+      momos: momos ?? this.momos,
       showMessage: showMessage ?? this.showMessage,
       message: message ?? this.message,
     );

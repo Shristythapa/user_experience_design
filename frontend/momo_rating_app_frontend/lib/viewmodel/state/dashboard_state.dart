@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:momo_rating_app_frontend/screens/add/add_momo.dart';
-import 'package:momo_rating_app_frontend/screens/dashboard/dashboard.dart';
+import 'package:momo_rating_app_frontend/screens/dashboard/home.dart';
 
 class DashboardState {
   final int index;

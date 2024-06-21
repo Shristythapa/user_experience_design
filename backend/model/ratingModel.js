@@ -1,15 +1,11 @@
 const mongoose = require("mongoose");
 const Momo = require("./momoModel");
+const User = require("./userModel");
 
 const ratingSchema = mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: User,
-    required: true,
-  },
-  momoId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: Momo,
     required: true,
   },
   overallRating: {
@@ -28,22 +24,21 @@ const ratingSchema = mongoose.Schema({
     type: Number,
     required: true,
   },
-  aesthectic:{
+  aesthectic: {
     type: Number,
-    required: true
   },
-  spiceLevel:{
+  spiceLevel: {
     type: Number,
-    required: true
+    required: true,
   },
-  priceValue:{
+  priceValue: {
     type: Number,
-    required: true
+    required: true,
   },
-  review:{
+  review: {
     type: String,
-    required: true
-  }
+    required: true,
+  },
 });
 
 const Rating = mongoose.model("rating", ratingSchema);

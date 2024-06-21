@@ -3,7 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:momo_rating_app_frontend/repo/auth/auth_repo.dart';
-import 'package:momo_rating_app_frontend/screens/landing.dart';
+import 'package:momo_rating_app_frontend/screens/dashboard/main_dashboard_page.dart';
+import 'package:momo_rating_app_frontend/screens/startings/landing.dart';
 import 'package:momo_rating_app_frontend/viewmodel/state/auth_state.dart';
 
 final authViewModelProvider = StateNotifierProvider<AuthViewModel, AuthState>(
@@ -56,7 +57,7 @@ class AuthViewModel extends StateNotifier<AuthState> {
           Navigator.of(context).pop();
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const GetStarted()),
+            MaterialPageRoute(builder: (context) => const MainDashboard()),
           );
         },
       );

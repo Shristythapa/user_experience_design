@@ -2,13 +2,12 @@ const mongoose = require("mongoose");
 const User = require("./userModel");
 
 const preferenceSchema = mongoose.Schema({
-
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: User,
     required: true,
   },
-  
+
   sizeOfMomo: {
     type: Number,
   },
@@ -22,7 +21,9 @@ const preferenceSchema = mongoose.Schema({
   sauceVarity: {
     type: Number,
   },
-
+  spiceLevel: {
+    type: Number,
+  },
 });
 
 //"users" = mongodb collection name

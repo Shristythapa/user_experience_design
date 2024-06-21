@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:momo_rating_app_frontend/core/utils/snackbar.dart';
 import 'package:momo_rating_app_frontend/screens/auth/signup.dart';
-import 'package:momo_rating_app_frontend/viewmodel/auth_view_model.dart';
-
+import 'package:momo_rating_app_frontend/viewmodel/viewmodel/auth_view_model.dart';
 
 class Login extends ConsumerStatefulWidget {
   const Login({super.key});
@@ -49,26 +48,26 @@ class _LoginState extends ConsumerState<Login> {
               image: AssetImage('image/momo_background2.jpg'),
               fit: BoxFit.cover),
         ),
-        child: Scaffold(
-            appBar: AppBar(
-              elevation: 0,
-              foregroundColor: Colors.black,
-              backgroundColor: Colors.transparent,
-              leading: IconButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                icon: const Icon(
-                  Icons.arrow_back,
-                  size: 30,
-                  color: Colors.black,
+        child: Stack(
+          children: [
+            Scaffold(
+                appBar: AppBar(
+                  elevation: 0,
+                  foregroundColor: Colors.black,
+                  backgroundColor: Colors.transparent,
+                  leading: IconButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    icon: const Icon(
+                      Icons.arrow_back,
+                      size: 30,
+                      color: Colors.black,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            backgroundColor: Colors.transparent,
-            body: Stack(
-              children: [
-                Form(
+                backgroundColor: Colors.transparent,
+                body: Form(
                   key: form,
                   child: Align(
                     alignment: Alignment.bottomLeft,
@@ -264,20 +263,20 @@ class _LoginState extends ConsumerState<Login> {
                       ),
                     ),
                   ),
-                ),
-                if (authState.isLoading)
-                  Positioned.fill(
-                    child: Container(
-                      color: Colors.black.withOpacity(0.5),
-                      child: const Center(
-                        child: CircularProgressIndicator(
-                          color: Colors.yellow,
-                        ),
-                      ),
+                )),
+            if (authState.isLoading)
+              Positioned.fill(
+                child: Container(
+                  color: Colors.black.withOpacity(0.5),
+                  child: const Center(
+                    child: CircularProgressIndicator(
+                      color: Colors.yellow,
                     ),
                   ),
-              ],
-            )),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }

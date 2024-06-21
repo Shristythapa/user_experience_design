@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:momo_rating_app_frontend/core/utils/snackbar.dart';
 import 'package:momo_rating_app_frontend/screens/auth/login.dart';
-import 'package:momo_rating_app_frontend/viewmodel/auth_view_model.dart';
+import 'package:momo_rating_app_frontend/viewmodel/viewmodel/auth_view_model.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class SignUp extends ConsumerStatefulWidget {

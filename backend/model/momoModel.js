@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Rating = require("./ratingModel");
 const User = require("./userModel");
 
 const momoSchema = mongoose.Schema({
@@ -7,31 +8,44 @@ const momoSchema = mongoose.Schema({
     ref: User,
     required: true,
   },
-  momoName:{
+  momoName: {
     type: String,
-    required: true
+    required: true,
   },
-  momoImage:{
-    type:String,
-    required:true
+  momoImage: {
+    type: String,
+    required: true,
   },
-  momoPrice:{
+  momoPrice: {
     type: Number,
-    required:true
+    required: true,
   },
-  cookType:{
-    type:String,
-    required:true
-  },
-  fillingType:{
+  cookType: {
     type: String,
-    required:true
+    required: true,
+  },
+  fillingType: {
+    type: String,
+    required: true,
   },
   location: {
     type: String,
-    required : true
-  }
+    required: true,
+  },
+  shop: {
+    type: String,
+    required: true,
+  },
+  overallRating: {
+    type: Number,
+  },
+  reviews: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: Rating,
+    },
+  ],
 });
 
-const Momo = mongoose.model("momo",momoSchema);
+const Momo = mongoose.model("momo", momoSchema);
 module.exports = Momo;

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:momo_rating_app_frontend/config/themes/theme.dart';
-import 'package:momo_rating_app_frontend/screens/auth/login.dart';
-import 'package:momo_rating_app_frontend/screens/auth/signup.dart';
 import 'package:momo_rating_app_frontend/screens/dashboard/main_dashboard_page.dart';
+import 'package:momo_rating_app_frontend/screens/momodetails.dart';
 
 enum Dite { veg, nonveg }
 
@@ -18,7 +17,6 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -26,7 +24,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: getApplicationTheme(false),
-      home: const SignUp(),
+      home: const MainDashboard(),
     );
   }
 }
