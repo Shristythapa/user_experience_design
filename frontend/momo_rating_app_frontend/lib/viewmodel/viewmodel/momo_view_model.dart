@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:momo_rating_app_frontend/model/momo/momo_model.dart';
+import 'package:momo_rating_app_frontend/core/model/momo/momo_model.dart';
 import 'package:momo_rating_app_frontend/repo/momo/momo_repo.dart';
 import 'package:momo_rating_app_frontend/repo/momo/review_repo.dart';
 import 'package:momo_rating_app_frontend/screens/dashboard/main_dashboard_page.dart';
@@ -99,9 +99,10 @@ class MoMoViewModel extends StateNotifier<MoMoState> {
     });
   }
 
-  Future<void> getMomoById(String id, BuildContext context) async {
+  Future<void> getMomoById(
+      String id, String userId, BuildContext context) async {
     state.copyWith(isLoading: true);
-    final result = await moMoRemoteRepo.getMoMoById(id);
+    final result = await moMoRemoteRepo.getMoMoById(momoId: id, userId: userId);
 
     result.fold((failure) {
       state = state.copyWith(

@@ -1,6 +1,4 @@
-// part 'review_model.g.dart';
 
-// @JsonSerializable()
 class Review {
   final String? reviewId;
   final String userId;
@@ -28,6 +26,19 @@ class Review {
     required this.review,
   });
 
-  // factory Review.fromJson(Map<String, dynamic> json) => _$ReviewFromJson(json);
-  // Map<String, dynamic> toJson() => _$ReviewToJson(this);
+ factory Review.fromJson(Map<String, dynamic> json, String momoId) {
+    return Review(
+      reviewId: json['_id'],
+      userId: json['userId'],
+      momoId: momoId,
+      overallRating: json['overallRating'],
+      fillingAmount: json['fillingAmount'],
+      sizeOfMomo: json['sizeOfMomo'],
+      sauceVariety: json['sauceVariety'],
+      aesthectic: json['aesthectic'],
+      spiceLevel: json['spiceLevel'],
+      priceValue: json['priceValue'],
+      review: json['review'],
+    );
+  }
 }

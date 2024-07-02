@@ -4,7 +4,7 @@ const User = require("../model/userModel");
 const addPeference = async (req, res) => {
   console.log(req.body);
 
-  const { userId, sizeOfMomo, fillings, aesthetics, sauceVariaty } = req.body;
+  const { userId, cookType, fillingType, filling } = req.body;
 
   if (!userId) {
     return res.json({
@@ -13,26 +13,28 @@ const addPeference = async (req, res) => {
     });
   }
 
-const existingUser = await User.findOne({ userId: userId });
+  const existingUser = await User.findOne({ _id: userId });
 
-if (!existingUser) {
-  return res.status(400).json("User doesn't exist.");
-}
+  if (!existingUser) {
+    return res.status(400).json({
+      message: "User doesn't exist.",
+      success: false,
+    });
+  }
 
   try {
     const userPreferences = new Preference({
       userId: userId,
-      sizeOfMomo: sizeOfMomo,
-      fillings: fillings,
-      aesthetics: aesthetics,
-      sauceVariaty: sauceVariaty,
+      cookType: cookType,
+      fillingType: fillingType,
+      filling: filling,
     });
 
     await userPreferences.save();
     res.status(200).json({
       success: true,
       message: "Preferences added sucessfully",
-      data: newProduct,
+      data: userPreferences,
     });
   } catch (e) {
     console.log(e);
@@ -58,7 +60,6 @@ const updatePreferences = async (req, res) => {
   //destructure id from url
   const id = req.params.id;
 
-
   try {
     const updatedPreferences = {
       userId: userId,
@@ -82,32 +83,29 @@ const updatePreferences = async (req, res) => {
   }
 };
 
-
-const getUserPreference = async(req, res)=>{
+const getUserPreference = async (req, res) => {
   //destructure userId form request
   const userId = req.params.id;
 
-  if(!userId){
+  if (!userId) {
     return res.json({
       success: false,
-      message:"UserId Not Recived"
+      message: "UserId Not Recived",
     });
   }
 
-    try {
-      const prefrence = await Preference.findOne({userId:userId});
-      res.json({
-        success:true,
-        message:"Preference featched Successfully",
-        prefrence: prefrence,
-      });
-    } catch (e) {
-      console.log(e);
-      res.status(500).json("Server Error");
-    }
-
-}
-
+  try {
+    const prefrence = await Preference.findOne({ userId: userId });
+    res.json({
+      success: true,
+      message: "Preference featched Successfully",
+      prefrence: prefrence,
+    });
+  } catch (e) {
+    console.log(e);
+    res.status(500).json("Server Error");
+  }
+};
 
 module.exports = {
   addPeference,

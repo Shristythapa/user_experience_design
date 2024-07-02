@@ -4,12 +4,12 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:momo_rating_app_frontend/core/shared_pref/user_shared_prefs.dart';
-import 'package:momo_rating_app_frontend/core/utils/cook_filter_chip.dart';
-import 'package:momo_rating_app_frontend/core/utils/filling_filter_chip.dart';
-import 'package:momo_rating_app_frontend/core/utils/filtered_chip.dart';
+import 'package:momo_rating_app_frontend/core/utils/cook_filter.dart';
+import 'package:momo_rating_app_frontend/core/utils/filling_filter.dart';
+import 'package:momo_rating_app_frontend/core/utils/dite_filter.dart';
 import 'package:momo_rating_app_frontend/core/utils/snackbar.dart';
 import 'package:momo_rating_app_frontend/main.dart';
-import 'package:momo_rating_app_frontend/model/momo/momo_model.dart';
+import 'package:momo_rating_app_frontend/core/model/momo/momo_model.dart';
 import 'package:momo_rating_app_frontend/viewmodel/viewmodel/momo_view_model.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -65,11 +65,10 @@ class _AddMoMoState extends ConsumerState<AddMoMo> {
     int aesthetics = 0;
     int priceValue = 0;
     int spicyLevel = 0;
-    int taseOfSauce = 0;
     int sauceVariety = 0;
     int overallTaste = 0;
     final state = ref.watch(moMoViewModelProvider);
-
+    TextEditingController review = TextEditingController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (state.showMessage) {
         SnackBarManager.showSnackBar(
@@ -78,24 +77,29 @@ class _AddMoMoState extends ConsumerState<AddMoMo> {
       }
     });
     return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Scaffold(
-          appBar: AppBar(
-            title: const Text(
-              "Add MoMo",
-              style: TextStyle(
-                  color: Color(0xff000000),
-                  fontSize: 25,
-                  fontWeight: FontWeight.w700),
-            ),
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text(
+            "Add MoMo",
+            style: TextStyle(
+                color: Color(0xff000000),
+                fontSize: 25,
+                fontWeight: FontWeight.w700),
           ),
-          body: Stack(
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Stack(
             children: [
               if (state.isLoading)
-                const Center(
-                  child: CircularProgressIndicator(
-                    color: Colors.yellow,
+                Positioned.fill(
+                  child: Container(
+                    color: Colors.black.withOpacity(0.5),
+                    child: const Center(
+                      child: CircularProgressIndicator(
+                        color: Colors.yellow,
+                      ),
+                    ),
                   ),
                 ),
               Center(
@@ -156,7 +160,7 @@ class _AddMoMoState extends ConsumerState<AddMoMo> {
                                 backgroundImage: _img != null
                                     ? FileImage(_img!)
                                     : const AssetImage(
-                                            'image/dummyProfileImage.jfif')
+                                            'image/camera_icon_image.jpg')
                                         as ImageProvider,
                               ),
                             ),
@@ -272,19 +276,19 @@ class _AddMoMoState extends ConsumerState<AddMoMo> {
                           ),
                           keyboardType: TextInputType.number,
                         ),
-                        FilterChipExample(
+                        DiteFilter(
                           filters: diteFilters,
                           onSelectionChanged: (Set<Dite> dite) {
                             diteFilters = dite;
                           },
                         ),
-                        FillingFilterChipExample(
+                        FillingFilter(
                           filters: fillingFilters,
                           onSelectionChanged: (Set<FillingType> filling) {
                             fillingFilters = filling;
                           },
                         ),
-                        CookFilterChipExample(
+                        CookFilter(
                           filters: cookFilters,
                           onSelectionChanged: (Set<CookType> selectedFilters) {
                             cookFilters = selectedFilters;
@@ -379,27 +383,6 @@ class _AddMoMoState extends ConsumerState<AddMoMo> {
                           height: 15,
                         ),
                         const Text(
-                          "Taste of sauce",
-                          style: TextStyle(
-                              fontSize: 15,
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        RatingBar.builder(
-                          minRating: 0,
-                          maxRating: 5,
-                          itemBuilder: (context, _) => const Icon(
-                            Icons.star,
-                            color: Colors.amber,
-                          ),
-                          onRatingUpdate: (rating) {
-                            taseOfSauce = rating.toInt();
-                          },
-                        ),
-                        const SizedBox(
-                          height: 15,
-                        ),
-                        const Text(
                           "Sauce Varity",
                           style: TextStyle(
                               fontSize: 15,
@@ -441,6 +424,35 @@ class _AddMoMoState extends ConsumerState<AddMoMo> {
                         const SizedBox(
                           height: 15,
                         ),
+                        TextFormField(
+                          style: const TextStyle(
+                              color: Colors.black, fontSize: 20),
+                          controller: review,
+                          validator: (String? value) {
+                            if (value == null || value.isEmpty) {
+                              return "Review";
+                            } else {
+                              return null;
+                            }
+                          },
+                          decoration: InputDecoration(
+                            errorStyle: TextStyle(color: Colors.red[900]),
+                            labelText: "Review",
+                            labelStyle: const TextStyle(
+                              fontFamily: 'roboto',
+                              fontWeight: FontWeight.w500,
+                              fontSize: 15,
+                            ),
+                            border: const UnderlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black)),
+                            focusedBorder: const UnderlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black)),
+                          ),
+                          keyboardType: TextInputType.text,
+                        ),
+                        const SizedBox(
+                          height: 15,
+                        ),
                         ElevatedButton(
                             onPressed: () async {
                               if (form.currentState!.validate()) {
@@ -475,7 +487,7 @@ class _AddMoMoState extends ConsumerState<AddMoMo> {
                                         aesthetic: aesthetics,
                                         spiceLevel: spicyLevel,
                                         priceValue: priceValue,
-                                        textReview: 'like ut',
+                                        textReview: review.text,
                                         context: context,
                                       );
                                 });

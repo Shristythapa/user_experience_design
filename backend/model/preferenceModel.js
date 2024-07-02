@@ -7,22 +7,14 @@ const preferenceSchema = mongoose.Schema({
     ref: User,
     required: true,
   },
-
-  sizeOfMomo: {
-    type: Number,
+  cookType: {
+    type: String,
   },
-
-  fillings: {
-    type: Number,
+  fillingType: {
+    type: String,
   },
-  aesthetics: {
-    type: Number,
-  },
-  sauceVarity: {
-    type: Number,
-  },
-  spiceLevel: {
-    type: Number,
+  filling: {
+    type: String,
   },
 });
 

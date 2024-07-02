@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:momo_rating_app_frontend/core/shared_pref/user_shared_prefs.dart';
 import 'package:momo_rating_app_frontend/core/utils/snackbar.dart';
-import 'package:momo_rating_app_frontend/model/momo/momo_model.dart';
-import 'package:momo_rating_app_frontend/screens/momodetails.dart';
 import 'package:momo_rating_app_frontend/screens/profile/profile_page.dart';
 import 'package:momo_rating_app_frontend/viewmodel/viewmodel/momo_view_model.dart';
+import 'package:momo_rating_app_frontend/viewmodel/viewmodel/user_view_model.dart';
 import 'package:rate_in_stars/rate_in_stars.dart';
 
 class Dashboard extends ConsumerStatefulWidget {
@@ -19,9 +18,9 @@ class _DashboardState extends ConsumerState<Dashboard> {
   final ScrollController _scrollController = ScrollController();
   @override
   void initState() {
-    _getUserDetails();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(moMoViewModelProvider.notifier).getAllMomos();
+      ref.read(userViewModelProvider.notifier).getUserDetails();
     });
     super.initState();
   }
@@ -32,28 +31,18 @@ class _DashboardState extends ConsumerState<Dashboard> {
     super.dispose();
   }
 
-  late dynamic user; // Declare a variable to store the user information
-
-  Future<void> _getUserDetails() async {
-    var userResult = await ref.read(userSharedPrefsProvider).getUserDetails();
-    userResult.fold(
-      (failure) {
-        SnackBarManager.showSnackBar(
-          isError: true,
-          message: "Token Invalid",
-          context: context,
-        );
-      },
-      (fetchedUser) {
-        setState(() {
-          user = fetchedUser; // Update the user variable with fetched user
-        });
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
+    final userState = ref.watch(userViewModelProvider);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (userState.message != null) {
+        SnackBarManager.showSnackBar(
+            isError: ref.read(userViewModelProvider).isError,
+            message: ref.read(userViewModelProvider).message!,
+            context: context);
+        ref.read(userViewModelProvider.notifier).resetState();
+      }
+    });
     final state = ref.watch(moMoViewModelProvider);
     final momoState = ref.watch(moMoViewModelProvider);
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -121,13 +110,18 @@ class _DashboardState extends ConsumerState<Dashboard> {
                                   builder: (context) => const Profile()));
                         },
                         child: CircleAvatar(
-                          radius: 30,
-                          backgroundImage: user != null ||
-                                  user['profileImageUrl'] != null
-                              ? NetworkImage('${user['profileImageUrl']}')
-                              : const AssetImage('image/dummyProfileImage.jfif')
-                                  as ImageProvider,
-                        ),
+                            radius: 30,
+                            backgroundImage: userState.userDetails != null
+                                ? userState.userDetails!['profileImageUrl'] !=
+                                        null
+                                    ? NetworkImage(
+                                        '${userState.userDetails!['profileImageUrl']}')
+                                    : const AssetImage(
+                                            'image/dummyProfileImage.jfif')
+                                        as ImageProvider
+                                : const AssetImage(
+                                        'image/dummyProfileImage.jfif')
+                                    as ImageProvider),
                       ),
                     ),
                   ],
@@ -146,31 +140,29 @@ class _DashboardState extends ConsumerState<Dashboard> {
                     shrinkWrap: true,
                     itemBuilder: (context, index) {
                       return InkWell(
-                        onTap: () {
-                          ref
-                              .read(moMoViewModelProvider.notifier)
-                              .getMomoById(state.momo[index].id!, context);
-                          //     .then((value) {
-                          //   value.fold((error) {
-                          //     return;
-                          //   }, (model) {
-                          //     Navigator.push(
-                          //       context,
-                          //       MaterialPageRoute(
-                          //           builder: (context) =>
-                          //               MoMoDetails(moApiModel: model)),
-                          //     );
-                          //   });
-                          // });
-                        },
-                        child: buildCard(
-                          state.momo[index].momoImage ?? 'image/mmm.png',
-                          state.momo[index].fillingType,
-                          state.momo[index].location,
-                          state.momo[index].location,
-                          state.momo[index].momoPrice,
-                        ),
-                      );
+                          onTap: () async {
+                            var userId = await ref
+                                .read(userSharedPrefsProvider)
+                                .getUserDetails();
+                            userId.fold((l) {
+                              return SnackBarManager.showSnackBar(
+                                  isError: true,
+                                  message: "User not found",
+                                  context: context);
+                            }, (r) {
+                              ref
+                                  .read(moMoViewModelProvider.notifier)
+                                  .getMomoById(
+                                      state.momo[index].id!, r['_id'], context);
+                            });
+                          },
+                          child: buildCard(
+                              state.momo[index].momoImage ?? 'image/mmm.png',
+                              state.momo[index].fillingType,
+                              state.momo[index].location,
+                              state.momo[index].location,
+                              state.momo[index].momoPrice,
+                              state.momo[index].overallRating ?? 0.0));
                     },
                     itemCount: state.momo.length,
                   ),
@@ -189,10 +181,22 @@ class _DashboardState extends ConsumerState<Dashboard> {
                     shrinkWrap: true,
                     itemBuilder: (context, index) {
                       return InkWell(
-                        onTap: () {
-                          ref
-                              .read(moMoViewModelProvider.notifier)
-                              .getMomoById(state.momo[index].id!, context);
+                        onTap: () async {
+                          var userId = await ref
+                              .read(userSharedPrefsProvider)
+                              .getUserDetails();
+                          userId.fold((l) {
+                            return SnackBarManager.showSnackBar(
+                                isError: true,
+                                message: "User not found",
+                                context: context);
+                          }, (r) {
+                            ref
+                                .read(moMoViewModelProvider.notifier)
+                                .getMomoById(
+                                    state.momo[index].id!, r['_id'], context);
+                          });
+
                           //     .then((value) {
                           //   value.fold((error) {
                           //     return;
@@ -211,7 +215,8 @@ class _DashboardState extends ConsumerState<Dashboard> {
                             state.momo[index].fillingType,
                             state.momo[index].location,
                             state.momo[index].location,
-                            state.momo[index].momoPrice),
+                            state.momo[index].momoPrice,
+                            state.momo[index].overallRating ?? 0.0),
                       );
                     },
                     itemCount: state.momo.length,
@@ -225,8 +230,8 @@ class _DashboardState extends ConsumerState<Dashboard> {
     );
   }
 
-  Widget buildCard(
-      String image, String type, String shop, String location, String price) {
+  Widget buildCard(String image, String type, String shop, String location,
+      String price, double rating) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Card(
@@ -299,7 +304,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
                 ],
               ),
               RatingStars(
-                rating: 3.5,
+                rating: rating,
                 editable: true,
                 iconSize: 28,
                 color: const Color.fromARGB(255, 255, 187, 52),

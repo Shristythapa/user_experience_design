@@ -3,8 +3,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:momo_rating_app_frontend/repo/auth/auth_repo.dart';
+import 'package:momo_rating_app_frontend/screens/auth/add_preferences.dart';
+import 'package:momo_rating_app_frontend/screens/auth/login.dart';
+import 'package:momo_rating_app_frontend/screens/auth/reset_password.dart';
 import 'package:momo_rating_app_frontend/screens/dashboard/main_dashboard_page.dart';
-import 'package:momo_rating_app_frontend/screens/startings/landing.dart';
 import 'package:momo_rating_app_frontend/viewmodel/state/auth_state.dart';
 
 final authViewModelProvider = StateNotifierProvider<AuthViewModel, AuthState>(
@@ -20,11 +22,14 @@ class AuthViewModel extends StateNotifier<AuthState> {
     state = state.copyWith(isLoading: true);
     authRemoteRepo.register(image, email, username, password).then((value) {
       value.fold(
-        (failure) => state = state.copyWith(
-            message: failure.error,
-            isLoading: false,
-            showMessage: true,
-            isError: true),
+        (failure) {
+          print(failure.error);
+          state = state.copyWith(
+              message: failure.error,
+              isLoading: false,
+              showMessage: true,
+              isError: true);
+        },
         (success) {
           state = state.copyWith(
               isLoading: false,
@@ -33,7 +38,7 @@ class AuthViewModel extends StateNotifier<AuthState> {
           Navigator.of(context).pop();
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const GetStarted()),
+            MaterialPageRoute(builder: (context) => const AddPreferencesPage()),
           );
         },
       );
@@ -53,11 +58,60 @@ class AuthViewModel extends StateNotifier<AuthState> {
           state = state.copyWith(
               isLoading: false,
               showMessage: true,
-              message: "Signed Up Sucessfully");
+              message: "Loged In Sucessfully");
           Navigator.of(context).pop();
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const MainDashboard()),
+          );
+        },
+      );
+    });
+  }
+
+  void forgotPassword(String email, BuildContext context) {
+    state = state.copyWith(isLoading: true);
+    authRemoteRepo.forgotPassword(email).then((value) {
+      value.fold(
+        (failure) => state.copyWith(
+            message: failure.error,
+            isLoading: false,
+            showMessage: true,
+            isError: true),
+        (success) {
+          state = state.copyWith(
+              isLoading: false,
+              showMessage: true,
+              message: "OTP sent successfully");
+          Navigator.of(context).pop();
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const ResetPassword()),
+          );
+        },
+      );
+    });
+  }
+
+  void resetPassword(
+      String email, String otp, String newPassword, BuildContext context) {
+    state = state.copyWith(isLoading: true);
+    authRemoteRepo.resetPassword(email, otp, newPassword).then((value) {
+      value.fold(
+        (failure) => state.copyWith(
+            message: failure.error,
+            isLoading: false,
+            showMessage: true,
+            isError: true),
+        (success) {
+          state = state.copyWith(
+              isLoading: false,
+              showMessage: true,
+              message: "Password reset successfully");
+          Navigator.of(context).pop();
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const Login()),
           );
         },
       );

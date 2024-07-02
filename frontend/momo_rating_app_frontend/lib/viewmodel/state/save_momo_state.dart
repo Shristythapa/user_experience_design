@@ -1,4 +1,4 @@
-import 'package:momo_rating_app_frontend/model/momo/momo_model.dart';
+import 'package:momo_rating_app_frontend/core/model/momo/momo_model.dart';
 
 class SaveMomoState {
   final bool isLoading;

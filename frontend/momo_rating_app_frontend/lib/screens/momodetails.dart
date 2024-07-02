@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:momo_rating_app_frontend/core/shared_pref/user_shared_prefs.dart';
 import 'package:momo_rating_app_frontend/core/utils/snackbar.dart';
-import 'package:momo_rating_app_frontend/model/momo/momo_model.dart';
-import 'package:momo_rating_app_frontend/model/momo/review_model.dart';
+import 'package:momo_rating_app_frontend/core/model/momo/momo_model.dart';
+import 'package:momo_rating_app_frontend/core/model/momo/review_model.dart';
+import 'package:momo_rating_app_frontend/screens/add/add_review.dart';
+import 'package:momo_rating_app_frontend/screens/dashboard/main_dashboard_page.dart';
 import 'package:momo_rating_app_frontend/viewmodel/viewmodel/save_momo_view_model.dart';
 import 'package:rate_in_stars/rate_in_stars.dart';
 
@@ -70,6 +72,16 @@ class _MoMoDetailsState extends ConsumerState<MoMoDetails> {
 
   @override
   Widget build(BuildContext context) {
+    final state = ref.watch(saveMoMoViewModelProvider);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (state.showMessage) {
+        SnackBarManager.showSnackBar(
+            isError: ref.read(saveMoMoViewModelProvider).isError,
+            message: ref.read(saveMoMoViewModelProvider).message,
+            context: context);
+        ref.read(saveMoMoViewModelProvider.notifier).resetState();
+      }
+    });
     Map<String, double> averages =
         _calculateAverageRatings(widget.moApiModel.reviews ?? []);
 
@@ -79,6 +91,10 @@ class _MoMoDetailsState extends ConsumerState<MoMoDetails> {
           leading: IconButton(
             onPressed: () {
               Navigator.of(context).pop();
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const MainDashboard()),
+              );
             },
             icon: const Icon(Icons.arrow_back_ios),
           ),
@@ -93,14 +109,32 @@ class _MoMoDetailsState extends ConsumerState<MoMoDetails> {
                         message: "User not found",
                         context: context);
                   }, (r) {
-                    ref.read(saveMoMoViewModelProvider.notifier).saveMoMo(
-                          userId: r['_id'],
-                          momoId: widget.moApiModel.id!,
-                          context: context,
-                        );
+                    if (widget.moApiModel.isSaved!) {
+                      ref
+                          .read(saveMoMoViewModelProvider.notifier)
+                          .removeSavedMomo(
+                            userId: r['_id'],
+                            momoId: widget.moApiModel.id!,
+                            context: context,
+                          );
+                    } else {
+                      ref.read(saveMoMoViewModelProvider.notifier).saveMoMo(
+                            userId: r['_id'],
+                            momoId: widget.moApiModel.id!,
+                            context: context,
+                          );
+                    }
                   });
                 },
-                icon: const Icon(Icons.bookmark))
+                icon: widget.moApiModel.isSaved!
+                    ? const Icon(
+                        Icons.bookmark,
+                        color: Colors.amber,
+                      )
+                    : const Icon(
+                        Icons.bookmark,
+                        color: Colors.black,
+                      ))
           ],
         ),
         body: Container(
@@ -186,6 +220,17 @@ class _MoMoDetailsState extends ConsumerState<MoMoDetails> {
                   ],
                 ),
                 ..._buildReviewList(widget.moApiModel.reviews),
+                ElevatedButton(
+                  onPressed: () async {
+                    Navigator.of(context).pop();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const AddReview()),
+                    );
+                  },
+                  child: const Text("Add Rewiew"),
+                )
               ],
             ),
           ),
@@ -217,7 +262,6 @@ class _MoMoDetailsState extends ConsumerState<MoMoDetails> {
     if (reviews == null || reviews.isEmpty) {
       return [const Text("No reviews available")];
     }
-
     return reviews.map((review) {
       return Container(
         decoration: const BoxDecoration(

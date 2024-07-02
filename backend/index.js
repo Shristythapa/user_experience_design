@@ -41,6 +41,8 @@ app.listen(PORT, () => {
 const connectDB = require("./database/db");
 connectDB();
 
+app.use(express.urlencoded({ extended: true }));
+
 // USER ROUTES
 app.use("/api/user", require("./routes/userRoutes"));
 //our actual routes
@@ -53,3 +55,5 @@ app.use("/api/momo", require("./routes/momoRoutes"));
 app.use("/api/ratings", require("./routes/ratingRouter"));
 
 app.use("/api/saveMomo", require("./routes/saveMomoRoutes"));
+
+app.use("/api/preferences", require("./routes/preferenceRoutes"));

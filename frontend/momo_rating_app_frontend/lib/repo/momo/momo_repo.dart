@@ -7,8 +7,7 @@ import 'package:momo_rating_app_frontend/config/constants/api_endpoints.dart';
 import 'package:momo_rating_app_frontend/core/error/failure.dart';
 import 'package:momo_rating_app_frontend/core/network/http_service.dart';
 import 'package:momo_rating_app_frontend/core/shared_pref/user_shared_prefs.dart';
-import 'package:momo_rating_app_frontend/model/momo/momo_model.dart';
-import 'package:momo_rating_app_frontend/model/momo/review_model.dart';
+import 'package:momo_rating_app_frontend/core/model/momo/momo_model.dart';
 
 final momoDataSourceProvider = Provider((ref) => MoMoRemoteRepo(
       dio: ref.read(httpServiceProvider),
@@ -97,6 +96,7 @@ class MoMoRemoteRepo {
               momoImage: momo['momoImage'],
               fillingType: momo['fillingType'],
               location: momo['location'],
+              overallRating: momo['overallRating'].toDouble(),
               shop: momo['shop']));
         }
 
@@ -112,46 +112,33 @@ class MoMoRemoteRepo {
     }
   }
 
-  Future<Either<Failure, MoMoApiModel>> getMoMoById(String id) async {
+  Future<Either<Failure, MoMoApiModel>> getMoMoById(
+      {required String momoId, required String userId}) async {
     try {
-      final response = await dio.get('${ApiEndpoints.getMomoById}$id');
+      print(ApiEndpoints.getMomoById);
+      final response = await dio.get(
+        ApiEndpoints.getMomoById,
+        queryParameters: {
+          'momoId': momoId,
+          'userId': userId,
+        },
+      );
+      print(response);
 
       if (response.statusCode == 200) {
-        final momoData = response.data['data'];
+        if (response.statusCode == 200) {
+          final momoData = response.data['data']['momo'];
+          momoData['isSaved'] = response.data['data']['momoSaved'];
 
-        // Parse reviews
-        List<Review> reviews = (momoData['reviews'] as List).map((reviewJson) {
-          return Review(
-            reviewId: reviewJson['_id'],
-            userId: reviewJson['userId'],
-            momoId: momoData[
-                '_id'], // Assuming momoId should be the same as the fetched momo
-            overallRating: reviewJson['overallRating'],
-            fillingAmount: reviewJson['fillingAmount'],
-            sizeOfMomo: reviewJson['sizeOfMomo'],
-            sauceVariety: reviewJson['sauceVariety'],
-            aesthectic: reviewJson['aesthectic'],
-            spiceLevel: reviewJson['spiceLevel'],
-            priceValue: reviewJson['priceValue'],
-            review: reviewJson['review'],
-          );
-        }).toList();
+          final moMoApiModel = MoMoApiModel.fromJson(momoData);
 
-        // Parse momo
-        final moMoApiModel = MoMoApiModel(
-          id: momoData['_id'],
-          momoImage: momoData['momoImage'],
-          userId: momoData['userId'],
-          momoName: momoData['momoName'],
-          momoPrice: momoData['momoPrice'].toString(),
-          cookType: momoData['cookType'],
-          fillingType: momoData['fillingType'],
-          location: momoData['location'],
-          shop: momoData['shop'],
-          reviews: reviews,
-        );
-
-        return Right(moMoApiModel);
+          return Right(moMoApiModel);
+        } else {
+          return Left(Failure(
+            error: response.data['error'] ?? 'Unexpected error',
+            statusCode: response.statusCode.toString(),
+          ));
+        }
       } else {
         return Left(Failure(
           error: response.data['error'] ?? 'Unexpected error',

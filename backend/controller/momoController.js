@@ -2,72 +2,7 @@ const Momo = require("../model/momoModel");
 const User = require("../model/userModel");
 const cloudinary = require("cloudinary");
 const Rating = require("../model/ratingModel");
-// const addMomo = async (req, res) => {
-//   console.log(req.body);
-//   const { userId, momoName, momoPrice, cookType, fillingType, location, shop } =
-//     req.body;
-
-//   const { momoImage } = req.files;
-
-//   if (
-//     (!userId,
-//     !momoName,
-//     !momoImage,
-//     !momoPrice,
-//     !cookType,
-//     !fillingType,
-//     !location,
-//     !shop,
-//     !momoImage)
-//   ) {
-//     console.log("not all feilds found");
-//     return res.json({
-//       success: false,
-//       message: "Enter all feilds",
-//     });
-//   }
-//   // const existingUser = await User.findOne({ email: email });
-//   // if (!existingUser) {
-//   //   return res.status(400).json("User Doesn't exists.");
-//   // }
-
-//   try {
-//     //step 5: upload images to cloudainary
-//     //uploadedImage holds info send after images are uploded
-//     //scale -> all images are stored in same format (croped)
-//     const uploadedImage = await cloudinary.v2.uploader.upload(momoImage.path, {
-//       folder: "momo",
-//       crop: "scale",
-//     });
-//     const newMomo = new Momo({
-//       userId: userId,
-//       momoName: momoName,
-//       momoImage: uploadedImage.secure_url,
-//       momoPrice: momoPrice,
-//       cookType: cookType,
-//       fillingType: fillingType,
-//       location: location,
-//       shop: shop,
-//       overallRating: 0,
-//     });
-
-//     console.log("momo saved");
-//     console.log(newMomo);
-//     await newMomo.save();
-//     res.status(200).json({
-//       success: true,
-//       message: "Momo Added Sucessfully",
-//       data: newMomo,
-//     });
-//   } catch (e) {
-//     console.log(e);
-//     res.status(500).json({
-//       success: false,
-//       message: "Server Error",
-//       data: newMomo,
-//     });
-//   }
-// };
+const SavedMomo = require("../model/saveMomoModel");
 const addMomo = async (req, res) => {
   console.log(req.body);
   const {
@@ -170,8 +105,10 @@ const addMomo = async (req, res) => {
       const avgRating = sumRatings / totalRatings;
 
       momo.overallRating = avgRating;
-      await momo.save();
+    } else {
+      momo.overallRating = overallRating;
     }
+    await momo.save();
     console.log("sum aratting ");
 
     res.status(200).json({
@@ -184,7 +121,7 @@ const addMomo = async (req, res) => {
     });
   } catch (e) {
     console.log(e);
-    res.status(500).json({
+    res.json({
       success: false,
       message: "Server Error",
     });
@@ -193,11 +130,28 @@ const addMomo = async (req, res) => {
 
 const getMomoById = async (req, res) => {
   try {
-    const momo = await Momo.findById(req.params.id).populate("reviews").exec();
+    const { userId, momoId } = req.query;
+
+    console.log("get momo by id..");
+    // Find the momo by ID and populate reviews
+    const momo = await Momo.findById(momoId).populate("reviews").exec();
+    if (!momo) {
+      return res.status(404).json({
+        success: false,
+        message: "Momo not found",
+      });
+    }
+
+    // Check if the momo is saved by the user
+    const savedMomo = await SavedMomo.findOne({ userId, momoId });
+
     res.status(200).json({
       success: true,
-      message: "get momo by id sucessful",
-      data: momo,
+      message: "Get momo by id successful",
+      data: {
+        momo: momo,
+        momoSaved: !!savedMomo, // momoSaved is true if savedMomo exists, false otherwise
+      },
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -264,6 +218,87 @@ const updateMomo = async (req, res) => {
     });
   }
 };
+const getRatingsByUser = async (req, res) => {
+  const { id } = req.params; // Assuming userId is passed as a parameter
+  try {
+    const momos = await Momo.find({ userId: id }).populate({
+      path: "reviews",
+      model: "rating",
+      select:
+        "overallRating fillingAmount sizeOfMomo sauceVariety aesthectic spiceLevel priceValue review",
+    });
+
+    if (momos.length > 0) {
+      return res.status(200).json({
+        message: "Ratings found",
+        ratings: momos.map((momo) => ({
+          momoId: momo._id,
+          momoName: momo.momoName,
+          momoImage: momo.momoImage,
+          ratings: momo.reviews, // Array of ratings associated with this momo
+        })),
+        success: true,
+      });
+    } else {
+      return res.status(404).json({
+        message: "Ratings not found for the user",
+        success: false,
+      });
+    }
+  } catch (error) {
+    console.error("Error fetching ratings:", error);
+    return res.status(500).json({
+      message: "Server error",
+      success: false,
+    });
+  }
+};
+
+const getRatingById = async (req, res) => {
+  const { id } = req.params; 
+
+  try {
+    const momo = await Momo.findOne({ reviews: id }).populate({
+      path: "reviews",
+      match: { _id: id }, 
+      model: "rating",
+      select:
+        "overallRating fillingAmount sizeOfMomo sauceVariety aesthectic spiceLevel priceValue review",
+    });
+
+    if (momo && momo.reviews.length > 0) {
+      const rating = momo.reviews[0];
+
+      return res.status(200).json({
+        message: "Rating found",
+        rating: rating,
+        momo: {
+          momoId: momo._id,
+          momoName: momo.momoName,
+          momoImage: momo.momoImage,
+          momoPrice: momo.momoPrice,
+          cookType: momo.cookType,
+          fillingType: momo.fillingType,
+          location: momo.location,
+          shop: momo.shop,
+          overallRating: momo.overallRating,
+        },
+        success: true,
+      });
+    } else {
+      return res.status(404).json({
+        message: "Rating not found",
+        success: false,
+      });
+    }
+  } catch (error) {
+    console.error("Error fetching rating:", error);
+    return res.status(500).json({
+      message: "Server error",
+      success: false,
+    });
+  }
+};
 
 const getAllMomo = async (req, res) => {
   try {
@@ -271,12 +306,14 @@ const getAllMomo = async (req, res) => {
     res.json({
       success: true,
       momos: listOfMomo,
-
       message: "Momos featched sucessfully",
     });
   } catch (e) {
     console.log(e);
-    res.status(500).json("Server error");
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
   }
 };
 
@@ -285,4 +322,6 @@ module.exports = {
   updateMomo,
   getAllMomo,
   getMomoById,
+  getRatingsByUser,
+  getRatingById,
 };

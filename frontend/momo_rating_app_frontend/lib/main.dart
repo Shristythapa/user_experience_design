@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:momo_rating_app_frontend/config/themes/theme.dart';
-import 'package:momo_rating_app_frontend/screens/dashboard/main_dashboard_page.dart';
-import 'package:momo_rating_app_frontend/screens/momodetails.dart';
+import 'package:momo_rating_app_frontend/screens/review/review_details.dart';
 
-enum Dite { veg, nonveg }
+enum Dite { Pesketarian, Vegan, Veg, NonVeg }
 
-enum FillingType { chicken, pork, egg, tofu, paneer }
+enum FillingType { Chicken, Pork, Egg, Tofu, Paneer, Vegetables, Buff, Sea }
 
-enum CookType { steam, fry, jhol }
+enum CookType { Steam, Fry, Jhol, Kothe, CMoMo }
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
@@ -24,7 +23,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: getApplicationTheme(false),
-      home: const MainDashboard(),
+      home: const ReviewDetails(),
     );
   }
 }

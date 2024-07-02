@@ -3,20 +3,20 @@
 import 'package:flutter/material.dart';
 import 'package:momo_rating_app_frontend/main.dart';
 
-class FilterChipExample extends StatefulWidget {
+class DiteFilter extends StatefulWidget {
   Set<Dite> filters;
   final Function(Set<Dite>) onSelectionChanged;
-  FilterChipExample({
+  DiteFilter({
     super.key,
     required this.filters,
     required this.onSelectionChanged,
   });
 
   @override
-  State<FilterChipExample> createState() => _FilterChipExampleState();
+  State<DiteFilter> createState() => _DiteFilterState();
 }
 
-class _FilterChipExampleState extends State<FilterChipExample> {
+class _DiteFilterState extends State<DiteFilter> {
   // enum ExerciseFilter {}
   Set<Dite> filters = <Dite>{};
 

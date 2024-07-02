@@ -42,15 +42,20 @@ class AuthRemoteRepo {
           options: Options(headers: {'Content-Type': 'multipart/form-data'}));
 
       if (response.statusCode == 200) {
+        var token = response.data['token'];
+        var userData = response.data['userData'];
+        await userSharedPrefs.setUserDetails(userData);
+        await userSharedPrefs.setUserToken(token);
         return const Right(true);
       }
-
       return Left(Failure(
           error: response.data['message'],
           statusCode: response.statusCode.toString()));
     } on DioException catch (e) {
+      print(e);
       if (e.response != null) {
-        return Left(Failure(error: e.response.toString(), statusCode: "404"));
+        return Left(
+            Failure(error: e.response!.data['message'], statusCode: "404"));
       }
       return Left(Failure(error: e.error.toString(), statusCode: '400'));
     }
@@ -80,9 +85,95 @@ class AuthRemoteRepo {
         var userData = response.data['userData'];
         await userSharedPrefs.setUserDetails(userData);
         await userSharedPrefs.setUserToken(token);
-        print(token);
         return const Right(true);
       }
+      return Left(Failure(
+          error: response.data['message'],
+          statusCode: response.statusCode.toString()));
+    } on DioException catch (e) {
+      if (e.response != null) {
+        return Left(Failure(
+          error: e.response!.data['message'],
+          statusCode: "404",
+        ));
+      }
+
+      return Left(
+        Failure(
+          error: e.error.toString(),
+          statusCode: e.response?.statusCode.toString() ?? '0',
+        ),
+      );
+    }
+  }
+
+  Future<Either<Failure, bool>> forgotPassword(String email) async {
+    try {
+      FormData formData = FormData.fromMap(
+        {
+          'email': email,
+        },
+      );
+
+      Response response = await dio.post(
+        ApiEndpoints.forgotPassword,
+        data: formData,
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        return const Right(true);
+      }
+
+      return Left(Failure(
+          error: response.data['message'],
+          statusCode: response.statusCode.toString()));
+    } on DioException catch (e) {
+      if (e.response != null) {
+        return Left(Failure(
+          error: e.response!.data['message'],
+          statusCode: "404",
+        ));
+      }
+
+      return Left(
+        Failure(
+          error: e.error.toString(),
+          statusCode: e.response?.statusCode.toString() ?? '0',
+        ),
+      );
+    }
+  }
+
+  Future<Either<Failure, bool>> resetPassword(
+      String email, String otp, String newPassword) async {
+    try {
+      FormData formData = FormData.fromMap(
+        {
+          'email': email,
+          'otpCode': otp,
+          'newPassword': newPassword,
+        },
+      );
+
+      Response response = await dio.post(
+        ApiEndpoints.resetPassword,
+        data: formData,
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        return const Right(true);
+      }
+
       return Left(Failure(
           error: response.data['message'],
           statusCode: response.statusCode.toString()));

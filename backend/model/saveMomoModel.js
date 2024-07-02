@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const User = require("./userModel");
 const Momo = require("./momoModel");
 
-const savedMomoSchema = mongoose.Schema({
+const SaveMomo = mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: User,
@@ -15,4 +15,4 @@ const savedMomoSchema = mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("SavedMomo", savedMomoSchema);
+module.exports = mongoose.model("SavedMomo", SaveMomo);

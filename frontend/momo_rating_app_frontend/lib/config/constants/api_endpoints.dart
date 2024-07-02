@@ -3,9 +3,8 @@ class ApiEndpoints {
 
   static const Duration connectionTimeout = Duration(seconds: 8000);
   static const Duration receiveTimeout = Duration(seconds: 8000);
-//   "http://192.168.56.1:5000/api/session/getAllSessions"
-  // static const String baseUrl = "http://10.0.2.2:5000/api/";
-  static const String baseUrl = "http://192.168.83.63:5000/api/";
+
+  static const String baseUrl = "http://192.168.168.63:5000/api/";
 
 // auth routes
   static const String userRegister = "user/create";
@@ -14,12 +13,24 @@ class ApiEndpoints {
   //momo features
   static const String addMomo = "momo/add";
   static const String getAllMomo = "momo/getAllMomo";
-  static const String getMomoById = "momo/getMomoById/";
+  static const String getMomoById = "momo/getMomoById";
 
   //review features
   static const String addReview = "ratings/addRating";
+  static const String getRatingOfUser = "momo/getRatingByUser/";
+  static const String getRatingById = "momo/getRatingById/";
+  static const String deleteRating = "ratings/deleteRating/";
 
   //save momo
   static const String saveMomo = "saveMomo/saveMomo";
   static const String getSavedMomo = "saveMomo/savedMomos/";
+  static const String removeSavedMomo = "saveMomo/removeSavedMomo";
+
+  //forgot password
+  static const String forgotPassword = "user/forgotPassword";
+  static const String resetPassword = "user/resetPassword";
+
+  // preferences route
+  static const String addPreferences = "preferences/create";
+  static const String viewPreferences = "preferences/getPreference/";
 }

@@ -1,26 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:momo_rating_app_frontend/core/utils/snackbar.dart';
-import 'package:momo_rating_app_frontend/screens/auth/forgot_password.dart';
-import 'package:momo_rating_app_frontend/screens/auth/signup.dart';
+import 'package:momo_rating_app_frontend/screens/auth/login.dart';
 import 'package:momo_rating_app_frontend/viewmodel/viewmodel/auth_view_model.dart';
 
-class Login extends ConsumerStatefulWidget {
-  const Login({super.key});
+class ResetPassword extends ConsumerStatefulWidget {
+  const ResetPassword({super.key});
 
   @override
-  ConsumerState<Login> createState() => _LoginState();
+  ConsumerState<ResetPassword> createState() => _ResetPasswordState();
 }
 
-class _LoginState extends ConsumerState<Login> {
-  bool buttonPressed = false;
-
-  String password = '';
-  String email = '';
+class _ResetPasswordState extends ConsumerState<ResetPassword> {
   bool showPassword = false;
+  bool buttonPressed = false;
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  TextEditingController optController = TextEditingController();
   FocusNode myFocusNode = FocusNode();
 
   final form = GlobalKey<FormState>();
@@ -37,7 +34,6 @@ class _LoginState extends ConsumerState<Login> {
         ref.read(authViewModelProvider.notifier).reset();
       }
     });
-
     return SafeArea(
       child: Container(
         decoration: const BoxDecoration(
@@ -91,7 +87,7 @@ class _LoginState extends ConsumerState<Login> {
                               const SizedBox(
                                 width: double.infinity,
                                 child: Text(
-                                  "LogIn",
+                                  "Reset Password",
                                   style: TextStyle(
                                       color: Color(0xff474747),
                                       fontSize: 25,
@@ -138,11 +134,42 @@ class _LoginState extends ConsumerState<Login> {
                                           BorderSide(color: Colors.black)),
                                 ),
                                 keyboardType: TextInputType.emailAddress,
-                                onChanged: (value) => setState(() {
-                                  email = value;
-                                }),
                               ),
                               const SizedBox(height: 10),
+                              TextFormField(
+                                style: const TextStyle(fontSize: 20),
+                                controller: optController,
+                                validator: (String? value) {
+                                  if (value == null || value.isEmpty) {
+                                    return "otp is required";
+                                  } else {
+                                    return null;
+                                  }
+                                },
+                                obscureText: !showPassword,
+                                obscuringCharacter: '*',
+                                decoration: InputDecoration(
+                                  errorStyle: TextStyle(color: Colors.red[900]),
+                                  labelText: "otp",
+                                  labelStyle: const TextStyle(
+                                    fontFamily: 'roboto',
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 15,
+                                  ),
+                                  prefixIcon: const Icon(
+                                    Icons.password,
+                                  ),
+                                  border: const UnderlineInputBorder(),
+                                  focusedBorder: const UnderlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: Colors.black)),
+                                  focusColor:
+                                      const Color.fromARGB(255, 141, 125, 164),
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
                               TextFormField(
                                 style: const TextStyle(fontSize: 20),
                                 controller: passwordController,
@@ -218,12 +245,15 @@ class _LoginState extends ConsumerState<Login> {
                                     if (form.currentState!.validate()) {
                                       ref
                                           .read(authViewModelProvider.notifier)
-                                          .login(emailController.text,
-                                              passwordController.text, context);
+                                          .resetPassword(
+                                              emailController.text,
+                                              optController.text,
+                                              passwordController.text,
+                                              context);
                                     }
                                   }),
                                   child: const Text(
-                                    "Login",
+                                    "Reset",
                                     style: TextStyle(
                                       fontSize: 20,
                                       fontFamily: 'roboto',
@@ -241,7 +271,7 @@ class _LoginState extends ConsumerState<Login> {
                                 child: Center(
                                     child: InkWell(
                                   child: const Text(
-                                    "Don't have an account?",
+                                    "Go to login?",
                                     style: TextStyle(
                                       fontFamily: 'roboto',
                                       fontWeight: FontWeight.w500,
@@ -252,34 +282,11 @@ class _LoginState extends ConsumerState<Login> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => const SignUp()),
+                                          builder: (context) => const Login()),
                                     );
                                   },
                                 )),
                               ),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 20, horizontal: 20),
-                                child: Center(
-                                    child: InkWell(
-                                  child: const Text(
-                                    "Forogt Password?",
-                                    style: TextStyle(
-                                      fontFamily: 'roboto',
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                  onTap: () {
-                                    Navigator.of(context).pop();
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              const ForgotPassword()),
-                                    );
-                                  },
-                                )),
-                              )
                             ],
                           ),
                         ),

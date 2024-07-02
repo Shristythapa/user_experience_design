@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:momo_rating_app_frontend/screens/add/add_momo.dart';
 import 'package:momo_rating_app_frontend/screens/dashboard/home.dart';
+import 'package:momo_rating_app_frontend/screens/review/review_list.dart';
+import 'package:momo_rating_app_frontend/screens/save/saved_momo.dart';
 
 class DashboardState {
   final int index;
@@ -17,8 +19,8 @@ class DashboardState {
           const Dashboard(),
           const Dashboard(),
           const AddMoMo(),
-          const Dashboard(),
-          const Dashboard(),
+          const SavedMomos(),
+          const ReviewList(),
         ];
 
   DashboardState copyWith({int? index}) {

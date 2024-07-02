@@ -58,42 +58,42 @@ class _SignUpState extends ConsumerState<SignUp> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authViewModelProvider);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (authState.errorMessage != null && authState.showMessage!) {
+      if (authState.showMessage!) {
         SnackBarManager.showSnackBar(
-            isError: true,
-            message: ref.read(authViewModelProvider).errorMessage!,
+            isError: ref.read(authViewModelProvider).isError,
+            message: ref.read(authViewModelProvider).message,
             context: context);
         ref.read(authViewModelProvider.notifier).reset();
       }
     });
 
     return SafeArea(
-      child: Container(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-              image: AssetImage('image/momo_background2.jpg'),
-              fit: BoxFit.cover),
-        ),
-        child: Scaffold(
-            appBar: AppBar(
-              elevation: 0,
-              foregroundColor: Colors.black,
-              backgroundColor: Colors.transparent,
-              leading: IconButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                icon: const Icon(
-                  Icons.arrow_back,
-                  size: 30,
-                  color: Colors.black,
-                ),
-              ),
+      child: Stack(
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                  image: AssetImage('image/momo_background2.jpg'),
+                  fit: BoxFit.cover),
             ),
-            backgroundColor: Colors.transparent,
-            body: Stack(
-              children: [
-                Form(
+            child: Scaffold(
+                appBar: AppBar(
+                  elevation: 0,
+                  foregroundColor: Colors.black,
+                  backgroundColor: Colors.transparent,
+                  leading: IconButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    icon: const Icon(
+                      Icons.arrow_back,
+                      size: 30,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+                backgroundColor: Colors.transparent,
+                body: Form(
                   key: form,
                   child: Align(
                     alignment: Alignment.bottomLeft,
@@ -392,20 +392,20 @@ class _SignUpState extends ConsumerState<SignUp> {
                       ),
                     ),
                   ),
-                ),
-                if (authState.isLoading)
-                  Positioned.fill(
-                    child: Container(
-                      color: Colors.black.withOpacity(0.5),
-                      child: const Center(
-                        child: CircularProgressIndicator(
-                          color: Colors.yellow,
-                        ),
-                      ),
-                    ),
+                )),
+          ),
+          if (authState.isLoading)
+            Positioned.fill(
+              child: Container(
+                color: Colors.black.withOpacity(0.5),
+                child: const Center(
+                  child: CircularProgressIndicator(
+                    color: Colors.yellow,
                   ),
-              ],
-            )),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
