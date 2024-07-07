@@ -55,7 +55,7 @@ class AuthRemoteRepo {
       print(e);
       if (e.response != null) {
         return Left(
-            Failure(error: e.response!.data['message'], statusCode: "404"));
+            Failure(error: e.response!.data['message'], statusCode: e.response!.statusCode.toString()));
       }
       return Left(Failure(error: e.error.toString(), statusCode: '400'));
     }
@@ -93,8 +93,8 @@ class AuthRemoteRepo {
     } on DioException catch (e) {
       if (e.response != null) {
         return Left(Failure(
-          error: e.response!.data['message'],
-          statusCode: "404",
+        error: e.response!.data['message'],
+            statusCode: e.response!.statusCode.toString()
         ));
       }
 
@@ -135,8 +135,8 @@ class AuthRemoteRepo {
     } on DioException catch (e) {
       if (e.response != null) {
         return Left(Failure(
-          error: e.response!.data['message'],
-          statusCode: "404",
+         error: e.response!.data['message'],
+            statusCode: e.response!.statusCode.toString()
         ));
       }
 

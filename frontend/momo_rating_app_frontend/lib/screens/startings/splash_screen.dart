@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:momo_rating_app_frontend/screens/dashboard/main_dashboard_page.dart';
 import 'package:momo_rating_app_frontend/screens/startings/landing.dart';
+import 'package:momo_rating_app_frontend/viewmodel/viewmodel/user_view_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
@@ -16,7 +17,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   void initState() {
     super.initState();
-
+    ref.read(userViewModelProvider.notifier).getUserDetails();
     navigateToNextScreen();
   }
 

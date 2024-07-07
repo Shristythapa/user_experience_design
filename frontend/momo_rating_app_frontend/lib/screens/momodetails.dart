@@ -35,7 +35,7 @@ class _MoMoDetailsState extends ConsumerState<MoMoDetails> {
       },
       (fetchedUser) {
         setState(() {
-          user = fetchedUser; // Update the user variable with fetched user
+          user = fetchedUser;
         });
       },
     );
@@ -145,7 +145,11 @@ class _MoMoDetailsState extends ConsumerState<MoMoDetails> {
               children: [
                 Center(
                   child: Text(
-                    widget.moApiModel.momoName,
+                    RegExp(r'\.(.*?)\}')
+                                .firstMatch(widget.moApiModel.fillingType) !=
+                            null
+                        ? "${RegExp(r'\.(.*?)\}').firstMatch(widget.moApiModel.fillingType)!.group(1)!} ${RegExp(r'\.(.*?)\}').firstMatch(widget.moApiModel.cookType)!.group(1)!}"
+                        : "",
                     style: const TextStyle(
                         fontSize: 20, fontWeight: FontWeight.w700),
                   ),
@@ -220,16 +224,26 @@ class _MoMoDetailsState extends ConsumerState<MoMoDetails> {
                   ],
                 ),
                 ..._buildReviewList(widget.moApiModel.reviews),
-                ElevatedButton(
-                  onPressed: () async {
-                    Navigator.of(context).pop();
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const AddReview()),
-                    );
-                  },
-                  child: const Text("Add Rewiew"),
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor:
+                          const Color(0xff43B13A), // Change button color to red
+                    ),
+                    onPressed: () async {
+                      Navigator.of(context).pop();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => AddReview(
+                                  id: widget.moApiModel.id!,
+                                )),
+                      );
+                    },
+                    child: const Text("Add Rewiew"),
+                  ),
                 )
               ],
             ),
@@ -264,13 +278,14 @@ class _MoMoDetailsState extends ConsumerState<MoMoDetails> {
     }
     return reviews.map((review) {
       return Container(
-        decoration: const BoxDecoration(
-            border: BorderDirectional(
-                bottom: BorderSide(
-                    width: 1, style: BorderStyle.solid, color: Colors.black))),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10.0),
-          child: Text(review.review),
+        width: double.infinity,
+        padding: const EdgeInsets.all(20),
+        child: Card(
+          color: Colors.white,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10.0),
+            child: Center(child: Text(review.review)),
+          ),
         ),
       );
     }).toList();

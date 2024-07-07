@@ -3,23 +3,21 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:momo_rating_app_frontend/core/model/momo/review_model.dart';
 import 'package:momo_rating_app_frontend/core/shared_pref/user_shared_prefs.dart';
-import 'package:momo_rating_app_frontend/core/utils/cook_filter.dart';
-import 'package:momo_rating_app_frontend/core/utils/filling_filter.dart';
-import 'package:momo_rating_app_frontend/core/utils/dite_filter.dart';
 import 'package:momo_rating_app_frontend/core/utils/snackbar.dart';
 import 'package:momo_rating_app_frontend/main.dart';
 import 'package:momo_rating_app_frontend/screens/dashboard/main_dashboard_page.dart';
 import 'package:momo_rating_app_frontend/viewmodel/viewmodel/rating_view_model.dart';
 
 class AddReview extends ConsumerStatefulWidget {
-  const AddReview({super.key});
+  final String id;
+  const AddReview({super.key, required this.id});
 
   @override
   ConsumerState<AddReview> createState() => _AddReviewState();
 }
 
 class _AddReviewState extends ConsumerState<AddReview> {
-  Set<Dite> diteFilters = {};
+  // Set<Dite> diteFilters = {};
   Set<FillingType> fillingFilters = {};
   Set<CookType> cookFilters = {};
   int sizeOfMomo = 0;
@@ -30,6 +28,7 @@ class _AddReviewState extends ConsumerState<AddReview> {
   int sauceVariety = 0;
   int overallTaste = 0;
   TextEditingController review = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(reviewViewModelProvider);
@@ -67,32 +66,12 @@ class _AddReviewState extends ConsumerState<AddReview> {
               ],
             ),
             body: Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(15.0),
               child: SingleChildScrollView(
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    DiteFilter(
-                      filters: diteFilters,
-                      onSelectionChanged: (Set<Dite> dite) {
-                        diteFilters = dite;
-                      },
-                    ),
-                    FillingFilter(
-                      filters: fillingFilters,
-                      onSelectionChanged: (Set<FillingType> filling) {
-                        fillingFilters = filling;
-                      },
-                    ),
-                    CookFilter(
-                      filters: cookFilters,
-                      onSelectionChanged: (Set<CookType> selectedFilters) {
-                        cookFilters = selectedFilters;
-                      },
-                    ),
-                    const SizedBox(
-                      height: 15,
-                    ),
                     const Text(
                       "Size of Momo",
                       style: TextStyle(
@@ -100,10 +79,14 @@ class _AddReviewState extends ConsumerState<AddReview> {
                           color: Colors.black,
                           fontWeight: FontWeight.bold),
                     ),
-                    // reviews
+                    const SizedBox(
+                      height: 10,
+                    ), // reviews
                     RatingBar.builder(
                       minRating: 0,
                       maxRating: 5,
+                      itemSize: 45,
+                      itemPadding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
                       itemBuilder: (context, _) => const Icon(
                         Icons.star,
                         color: Colors.amber,
@@ -122,10 +105,15 @@ class _AddReviewState extends ConsumerState<AddReview> {
                           color: Colors.black,
                           fontWeight: FontWeight.bold),
                     ),
+                    const SizedBox(
+                      height: 10,
+                    ),
                     // reviews
                     RatingBar.builder(
                       minRating: 0,
                       maxRating: 5,
+                      itemSize: 45,
+                      itemPadding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
                       itemBuilder: (context, _) => const Icon(
                         Icons.star,
                         color: Colors.amber,
@@ -144,9 +132,14 @@ class _AddReviewState extends ConsumerState<AddReview> {
                           color: Colors.black,
                           fontWeight: FontWeight.bold),
                     ),
+                    const SizedBox(
+                      height: 10,
+                    ),
                     RatingBar.builder(
                       minRating: 0,
                       maxRating: 5,
+                      itemSize: 45,
+                      itemPadding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
                       itemBuilder: (context, _) => const Icon(
                         Icons.star,
                         color: Colors.amber,
@@ -165,9 +158,14 @@ class _AddReviewState extends ConsumerState<AddReview> {
                           color: Colors.black,
                           fontWeight: FontWeight.bold),
                     ),
+                    const SizedBox(
+                      height: 10,
+                    ),
                     RatingBar.builder(
                       minRating: 0,
                       maxRating: 5,
+                      itemSize: 45,
+                      itemPadding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
                       itemBuilder: (context, _) => const Icon(
                         Icons.star,
                         color: Colors.amber,
@@ -186,9 +184,14 @@ class _AddReviewState extends ConsumerState<AddReview> {
                           color: Colors.black,
                           fontWeight: FontWeight.bold),
                     ),
+                    const SizedBox(
+                      height: 10,
+                    ),
                     RatingBar.builder(
                       minRating: 0,
                       maxRating: 5,
+                      itemSize: 45,
+                      itemPadding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
                       itemBuilder: (context, _) => const Icon(
                         Icons.star,
                         color: Colors.amber,
@@ -207,9 +210,14 @@ class _AddReviewState extends ConsumerState<AddReview> {
                           color: Colors.black,
                           fontWeight: FontWeight.bold),
                     ),
+                    const SizedBox(
+                      height: 10,
+                    ),
                     RatingBar.builder(
                       minRating: 0,
                       maxRating: 5,
+                      itemSize: 45,
+                      itemPadding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
                       itemBuilder: (context, _) => const Icon(
                         Icons.star,
                         color: Colors.amber,
@@ -228,9 +236,14 @@ class _AddReviewState extends ConsumerState<AddReview> {
                           color: Colors.black,
                           fontWeight: FontWeight.bold),
                     ),
+                    const SizedBox(
+                      height: 10,
+                    ),
                     RatingBar.builder(
                       minRating: 0,
                       maxRating: 5,
+                      itemSize: 45,
+                      itemPadding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
                       itemBuilder: (context, _) => const Icon(
                         Icons.star,
                         color: Colors.amber,
@@ -270,33 +283,43 @@ class _AddReviewState extends ConsumerState<AddReview> {
                     const SizedBox(
                       height: 15,
                     ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        var userId = await ref
-                            .read(userSharedPrefsProvider)
-                            .getUserDetails();
-                        userId.fold((l) {
-                          return SnackBarManager.showSnackBar(
-                              isError: true,
-                              message: "User not found",
-                              context: context);
-                        }, (r) {
-                          ref.read(reviewViewModelProvider.notifier).addRating(
-                              review: Review(
-                                  userId: r['_id'],
-                                  momoId: "",
-                                  overallRating: overallTaste,
-                                  fillingAmount: fillingAmount,
-                                  sizeOfMomo: sizeOfMomo,
-                                  sauceVariety: sauceVariety,
-                                  aesthectic: aesthetics,
-                                  spiceLevel: spicyLevel,
-                                  priceValue: priceValue,
-                                  review: review.text),
-                              context: context);
-                        });
-                      },
-                      child: const Text("Add Rewiew"),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(
+                              0xff43B13A), // Change button color to red
+                        ),
+                        onPressed: () async {
+                          var userId = await ref
+                              .read(userSharedPrefsProvider)
+                              .getUserDetails();
+                          userId.fold((l) {
+                            return SnackBarManager.showSnackBar(
+                                isError: true,
+                                message: "User not found",
+                                context: context);
+                          }, (r) {
+                            ref
+                                .read(reviewViewModelProvider.notifier)
+                                .addRating(
+                                    review: Review(
+                                        userId: r['_id'],
+                                        momoId: widget.id,
+                                        overallRating: overallTaste,
+                                        fillingAmount: fillingAmount,
+                                        sizeOfMomo: sizeOfMomo,
+                                        sauceVariety: sauceVariety,
+                                        aesthectic: aesthetics,
+                                        spiceLevel: spicyLevel,
+                                        priceValue: priceValue,
+                                        review: review.text),
+                                    context: context);
+                          });
+                        },
+                        child: const Text("Add Rewiew"),
+                      ),
                     )
                   ],
                 ),
@@ -304,13 +327,10 @@ class _AddReviewState extends ConsumerState<AddReview> {
             ),
           ),
           if (state.isLoading)
-            Positioned.fill(
-              child: Container(
-                color: Colors.black.withOpacity(0.5),
-                child: const Center(
-                  child: CircularProgressIndicator(
-                    color: Colors.yellow,
-                  ),
+            const Positioned.fill(
+              child: Center(
+                child: CircularProgressIndicator(
+                  color: Colors.yellow,
                 ),
               ),
             ),

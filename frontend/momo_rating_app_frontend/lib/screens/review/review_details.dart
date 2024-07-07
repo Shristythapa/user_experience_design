@@ -4,10 +4,13 @@ import 'package:momo_rating_app_frontend/core/shared_pref/user_shared_prefs.dart
 import 'package:momo_rating_app_frontend/core/utils/snackbar.dart';
 import 'package:momo_rating_app_frontend/core/model/momo/review_model.dart';
 import 'package:momo_rating_app_frontend/screens/dashboard/main_dashboard_page.dart';
+import 'package:momo_rating_app_frontend/viewmodel/viewmodel/momo_view_model.dart';
+import 'package:momo_rating_app_frontend/viewmodel/viewmodel/rating_view_model.dart';
 import 'package:rate_in_stars/rate_in_stars.dart';
 
 class ReviewDetails extends ConsumerStatefulWidget {
-  const ReviewDetails({super.key});
+  final Review review;
+  const ReviewDetails({super.key, required this.review});
 
   @override
   ConsumerState<ReviewDetails> createState() => _ReviewDetailsState();
@@ -87,29 +90,35 @@ class _ReviewDetailsState extends ConsumerState<ReviewDetails> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                const Center(
+                Center(
                   child: Text(
-                    " Your Rating on Buff Momo",
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+                    " Your Rating on ${RegExp(r'\.(.*?)\}').firstMatch(widget.review.fillingType!)!.group(1)!} ${RegExp(r'\.(.*?)\}').firstMatch(widget.review.cookType!)!.group(1)!} Momo",
+                    style: const TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.w700),
                   ),
                 ),
                 lab,
-                const SizedBox(
+                SizedBox(
                   height: 100,
                   width: 100,
-                  child: Image(image: AssetImage("image/mmm.png")),
+                  child: widget.review.image != null
+                      ? Image.network(widget.review.image!)
+                      : const Image(image: AssetImage("image/mmm.png")),
                 ),
-                const Row(
+                const SizedBox(
+                  height: 50,
+                ),
+                Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.restaurant, size: 20),
+                        const Icon(Icons.restaurant, size: 20),
                         Padding(
-                          padding: EdgeInsets.only(left: 10),
+                          padding: const EdgeInsets.only(left: 10),
                           child: Text(
-                            "shop",
-                            style: TextStyle(
+                            widget.review.shop!,
+                            style: const TextStyle(
                                 fontSize: 15, fontWeight: FontWeight.w500),
                           ),
                         )
@@ -117,12 +126,12 @@ class _ReviewDetailsState extends ConsumerState<ReviewDetails> {
                     ),
                     Row(
                       children: [
-                        Icon(Icons.location_on, size: 20),
+                        const Icon(Icons.location_on, size: 20),
                         Padding(
-                          padding: EdgeInsets.only(left: 10),
+                          padding: const EdgeInsets.only(left: 10),
                           child: Text(
-                            "location",
-                            style: TextStyle(
+                            widget.review.location!,
+                            style: const TextStyle(
                                 fontSize: 15, fontWeight: FontWeight.w500),
                           ),
                         )
@@ -131,23 +140,24 @@ class _ReviewDetailsState extends ConsumerState<ReviewDetails> {
                   ],
                 ),
                 lab,
-                // Row(
-                //   mainAxisAlignment: MainAxisAlignment.start,
-                //   children: [
-                //     Text(
-                //       "${widget.moApiModel.reviews?.length ?? 0} reviews",
-                //       style: const TextStyle(
-                //           color: Color(0xff6d6d6d), fontSize: 15),
-                //     )
-                //   ],
-                // ),
-                const SizedBox(
+                SizedBox(
                   width: double.infinity,
                   child: InkWell(
-                    // onTap: (){
-
-                    // },
-                    child: Text(
+                    onTap: () async {
+                      var userId = await ref
+                          .read(userSharedPrefsProvider)
+                          .getUserDetails();
+                      userId.fold((l) {
+                        return SnackBarManager.showSnackBar(
+                            isError: true,
+                            message: "User not found",
+                            context: context);
+                      }, (r) {
+                        ref.read(moMoViewModelProvider.notifier).getMomoById(
+                            widget.review.momoId, r['_id'], context);
+                      });
+                    },
+                    child: const Text(
                       textAlign: TextAlign.end,
                       "View other details",
                       style: TextStyle(
@@ -163,13 +173,20 @@ class _ReviewDetailsState extends ConsumerState<ReviewDetails> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       lab,
-                      _buildRatingRow("Overall Rating", 3),
-                      _buildRatingRow("Filling Amount", 3),
-                      _buildRatingRow("Size of Momo", 3),
-                      _buildRatingRow("Sauce Variety", 3),
-                      _buildRatingRow("Aesthetic", 3),
-                      _buildRatingRow("Spice Level", 3),
-                      _buildRatingRow("Price Value", 3),
+                      _buildRatingRow("Overall Rating",
+                          widget.review.overallRating.toDouble()),
+                      _buildRatingRow("Filling Amount",
+                          widget.review.fillingAmount.toDouble()),
+                      _buildRatingRow(
+                          "Size of Momo", widget.review.sizeOfMomo.toDouble()),
+                      _buildRatingRow("Sauce Variety",
+                          widget.review.sauceVariety.toDouble()),
+                      _buildRatingRow(
+                          "Aesthetic", widget.review.aesthectic.toDouble()),
+                      _buildRatingRow(
+                          "Spice Level", widget.review.spiceLevel.toDouble()),
+                      _buildRatingRow(
+                          "Price Value", widget.review.priceValue.toDouble()),
                       lab,
                       const Row(
                         mainAxisAlignment: MainAxisAlignment.start,
@@ -182,25 +199,134 @@ class _ReviewDetailsState extends ConsumerState<ReviewDetails> {
                         ],
                       ),
                       Container(
-                        decoration: const BoxDecoration(
-                            border: BorderDirectional(
-                                bottom: BorderSide(
-                                    width: 1,
-                                    style: BorderStyle.solid,
-                                    color: Colors.black))),
-                        child: const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 10.0),
-                          child: Text('Nice stuff'),
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(20),
+                        child: Card(
+                          color: Colors.white,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10.0),
+                            child: Center(child: Text(widget.review.review)),
+                          ),
                         ),
                       )
                     ],
                   ),
+                ),
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(
+                            0xffDB5858), // Change button color to red
+                      ),
+                      onPressed: () {
+                        // ref
+                        //     .read(reviewViewModelProvider.notifier)
+                        //     .deleteReview(widget.review.reviewId!, context);
+                        _showDeleteConfirmationDialog(context, ref);
+                      },
+                      child: const Text(
+                        "Delete review",
+                        style: TextStyle(fontSize: 20),
+                      )),
                 )
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  // void _showDeleteConfirmationDialog(BuildContext context, WidgetRef ref) {
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //         title: const Text("Confirm Delete"),
+  //         content: const Text("Are you sure you want to delete this review?"),
+  //         actions: [
+  //           TextButton(
+  //             child: const Text("Cancel"),
+  //             onPressed: () {
+  //               Navigator.of(context).pop(); // Close the dialog
+  //             },
+  //           ),
+  //           TextButton(
+  //             child: const Text("Delete"),
+  //             onPressed: () {
+  //               ref
+  //                   .read(reviewViewModelProvider.notifier)
+  //                   .deleteReview(widget.review.reviewId!, context);
+  //               Navigator.of(context).pop(); // Close the dialog after deletion
+  //             },
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
+
+  void _showDeleteConfirmationDialog(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          // shape: RoundedRectangleBorder(
+          //   borderRadius: BorderRadius.circular(10.0),
+          // ),
+          title: const Text(
+            textAlign: TextAlign.center,
+            "Are you sure you want to delete this review?",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
+          ),
+          content: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor:
+                      Colors.red, // Red background for Logout button
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.zero, // Remove rounded corners
+                  ),
+                ),
+                onPressed: () {
+                  ref
+                      .read(reviewViewModelProvider.notifier)
+                      .deleteReview(widget.review.reviewId!, context);
+                  Navigator.of(context).pop();
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const MainDashboard()));
+                },
+                child: const Text(
+                  "Delete",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor:
+                      Colors.orange, // Orange background for Cancel button
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.zero, // Remove rounded corners
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                },
+                child: const Text(
+                  "Cancel",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -222,22 +348,4 @@ class _ReviewDetailsState extends ConsumerState<ReviewDetails> {
       ],
     );
   }
-
-  // List<Widget> _buildReviewList(List<Review>? reviews) {
-  //   if (reviews == null || reviews.isEmpty) {
-  //     return [const Text("No reviews available")];
-  //   }
-  //   return reviews.map((review) {
-  //     return Container(
-  //       decoration: const BoxDecoration(
-  //           border: BorderDirectional(
-  //               bottom: BorderSide(
-  //                   width: 1, style: BorderStyle.solid, color: Colors.black))),
-  //       child: Padding(
-  //         padding: const EdgeInsets.symmetric(vertical: 10.0),
-  //         child: Text(review.review),
-  //       ),
-  //     );
-  //   }).toList();
-  // }
 }

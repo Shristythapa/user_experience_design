@@ -4,7 +4,7 @@ const User = require("../model/userModel");
 const addPeference = async (req, res) => {
   console.log(req.body);
 
-  const { userId, cookType, fillingType, filling } = req.body;
+  const { userId, cookType, filling } = req.body;
 
   if (!userId) {
     return res.json({
@@ -26,7 +26,7 @@ const addPeference = async (req, res) => {
     const userPreferences = new Preference({
       userId: userId,
       cookType: cookType,
-      fillingType: fillingType,
+      // fillingType: fillingType,
       filling: filling,
     });
 
@@ -44,35 +44,38 @@ const addPeference = async (req, res) => {
     });
   }
 };
-
-//update product
 const updatePreferences = async (req, res) => {
   console.log(req.body);
 
-  const { userId, sizeOfMomo, fillings, aesthetics, sauceVariaty } = req.body;
+  const { cookType, filling } = req.body;
 
-  if (!userId) {
-    return res.json({
-      success: false,
-      message: "UserId not found",
-    });
-  }
-  //destructure id from url
+  // Destructure id from URL
   const id = req.params.id;
 
   try {
+    // Find the product by ID
+    const product = await Preference.findById(id);
+
+    if (!product) {
+      return res.json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
+    // Update only the required fields, keeping the userId unchanged
     const updatedPreferences = {
-      userId: userId,
-      sizeOfMomo: sizeOfMomo,
-      fillings: fillings,
-      aesthetics: aesthetics,
-      sauceVariaty: sauceVariaty,
+      cookType: cookType || product.cookType,
+      // fillingType: fillingType || product.fillingType,
+      filling: filling || product.filling,
     };
-    await Products.findByIdAndUpdate(id, updatedPreferences);
+
+    await Preference.findByIdAndUpdate(id, updatedPreferences);
+
     res.json({
       success: true,
-      message: "Preferences Updated Sucessfully",
-      product: updatedPreferences,
+      message: "Preferences Updated Successfully",
+      product: { ...product.toObject(), ...updatedPreferences },
     });
   } catch (error) {
     console.log(error);
@@ -96,11 +99,18 @@ const getUserPreference = async (req, res) => {
 
   try {
     const prefrence = await Preference.findOne({ userId: userId });
-    res.json({
-      success: true,
-      message: "Preference featched Successfully",
-      prefrence: prefrence,
-    });
+    if (prefrence != null) {
+      res.json({
+        success: true,
+        message: "Preference featched Successfully",
+        prefrence: prefrence,
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        message: "Preference not found",
+      });
+    }
   } catch (e) {
     console.log(e);
     res.status(500).json("Server Error");

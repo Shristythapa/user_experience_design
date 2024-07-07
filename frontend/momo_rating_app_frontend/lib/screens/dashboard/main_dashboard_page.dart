@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:momo_rating_app_frontend/core/utils/snackbar.dart';
 import 'package:momo_rating_app_frontend/viewmodel/viewmodel/dashboard_view_model.dart';
+import 'package:momo_rating_app_frontend/viewmodel/viewmodel/momo_view_model.dart';
 
 class MainDashboard extends ConsumerStatefulWidget {
   const MainDashboard({super.key});
@@ -17,11 +19,21 @@ class _MainDashboardState extends ConsumerState<MainDashboard> {
 
   @override
   Widget build(BuildContext context) {
-    final MainDashboardState = ref.watch(dashboardViewModelProvider);
+    final mainDashboardState = ref.watch(dashboardViewModelProvider);
+    final momoState = ref.watch(moMoViewModelProvider);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (momoState.showMessage) {
+        SnackBarManager.showSnackBar(
+            message: momoState.message,
+            context: context,
+            isError: momoState.isError);
+        ref.read(moMoViewModelProvider.notifier).resetState();
+      }
+    });
     return SafeArea(
       child: Scaffold(
         body: Center(
-          child: MainDashboardState.listWidget[MainDashboardState.index],
+          child: mainDashboardState.listWidget[mainDashboardState.index],
         ),
         bottomNavigationBar: BottomNavigationBar(
             items: const <BottomNavigationBarItem>[
@@ -61,7 +73,7 @@ class _MainDashboardState extends ConsumerState<MainDashboard> {
                 label: 'Reviews',
               ),
             ],
-            currentIndex: MainDashboardState.index,
+            currentIndex: mainDashboardState.index,
             iconSize: 28,
             type: BottomNavigationBarType.fixed,
             selectedFontSize: 11,

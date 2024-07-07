@@ -137,7 +137,7 @@ class _SignUpState extends ConsumerState<SignUp> {
                               InkWell(
                                 onTap: () {
                                   showModalBottomSheet(
-                                    backgroundColor: const Color(0xFF6D3F83),
+                                    backgroundColor: Colors.white,
                                     context: context,
                                     isScrollControlled: true,
                                     shape: const RoundedRectangleBorder(

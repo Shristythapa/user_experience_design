@@ -8,10 +8,7 @@ const momoSchema = mongoose.Schema({
     ref: User,
     required: true,
   },
-  momoName: {
-    type: String,
-    required: true,
-  },
+
   momoImage: {
     type: String,
     required: true,

@@ -9,7 +9,6 @@ class MoMoApiModel {
   final String? id;
   final String? momoImage;
   final String userId;
-  final String momoName;
   final String momoPrice;
   final String cookType;
   final String fillingType;
@@ -25,7 +24,6 @@ class MoMoApiModel {
     this.isSaved,
     this.overallRating,
     required this.userId,
-    required this.momoName,
     required this.momoPrice,
     required this.cookType,
     required this.fillingType,
@@ -45,7 +43,6 @@ class MoMoApiModel {
       isSaved: json['isSaved'],
       momoImage: json['momoImage'],
       userId: json['userId'],
-      momoName: json['momoName'],
       momoPrice: json['momoPrice'].toString(),
       cookType: json['cookType'],
       fillingType: json['fillingType'],

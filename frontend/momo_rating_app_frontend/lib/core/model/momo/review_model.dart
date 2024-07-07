@@ -1,8 +1,12 @@
-
 class Review {
   final String? reviewId;
   final String userId;
   final String momoId;
+  final String? shop;
+  final String? location;
+  final String? cookType;
+  final String? fillingType;
+  final String? image;
   final int overallRating;
   final int fillingAmount;
   final int sizeOfMomo;
@@ -14,6 +18,11 @@ class Review {
 
   Review({
     this.reviewId,
+    this.shop,
+    this.location,
+    this.cookType,
+    this.fillingType,
+    this.image,
     required this.userId,
     required this.momoId,
     required this.overallRating,
@@ -26,7 +35,7 @@ class Review {
     required this.review,
   });
 
- factory Review.fromJson(Map<String, dynamic> json, String momoId) {
+  factory Review.fromJson(Map<String, dynamic> json, String momoId) {
     return Review(
       reviewId: json['_id'],
       userId: json['userId'],

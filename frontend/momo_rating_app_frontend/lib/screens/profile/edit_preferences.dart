@@ -2,19 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:momo_rating_app_frontend/core/model/preferences/preferences_model.dart';
 import 'package:momo_rating_app_frontend/core/shared_pref/user_shared_prefs.dart';
-
 import 'package:momo_rating_app_frontend/core/utils/snackbar.dart';
 import 'package:momo_rating_app_frontend/main.dart';
+import 'package:momo_rating_app_frontend/screens/profile/my_preferences.dart';
 import 'package:momo_rating_app_frontend/viewmodel/viewmodel/preference_view_model.dart';
 
-class AddPreferencesPage extends ConsumerStatefulWidget {
-  const AddPreferencesPage({super.key});
+// ignore: must_be_immutable
+class EditiPreferences extends ConsumerStatefulWidget {
+  String id;
+  EditiPreferences({super.key, required this.id});
 
   @override
-  ConsumerState<AddPreferencesPage> createState() => _AddPreferencesPageState();
+  ConsumerState<EditiPreferences> createState() => _EditiPreferencesState();
 }
 
-class _AddPreferencesPageState extends ConsumerState<AddPreferencesPage> {
+class _EditiPreferencesState extends ConsumerState<EditiPreferences> {
   // Set<Dite> diteFilters = {};
   final List<FillingType> selectedFilling = [];
   final List<CookType> selectedCook = [];
@@ -35,8 +37,18 @@ class _AddPreferencesPageState extends ConsumerState<AddPreferencesPage> {
         children: [
           Scaffold(
             appBar: AppBar(
+              leading: IconButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const MyPreferences()),
+                    );
+                  },
+                  icon: const Icon(Icons.arrow_back)),
               title: const Text(
-                "Add Preferences",
+                "Edit Preferences",
                 style: TextStyle(
                     color: Color(0xff000000),
                     fontSize: 25,
@@ -52,7 +64,7 @@ class _AddPreferencesPageState extends ConsumerState<AddPreferencesPage> {
                   const SizedBox(
                     height: 30,
                   ),
-               
+      
 
                   buildPreferenceSection<FillingType>(
                       'Filling', FillingType.values, selectedFilling),
@@ -93,23 +105,18 @@ class _AddPreferencesPageState extends ConsumerState<AddPreferencesPage> {
                                     message: "User not found",
                                     context: context);
                               }, (r) {
-                                if(selectedCook.isEmpty || selectedCook.isEmpty){
-                                    return SnackBarManager.showSnackBar(
-                                      isError: true,
-                                      message: "Preferences are required",
-                                      context: context);
-                                }
                                 PreferenceModel preferenceModel =
                                     PreferenceModel(
+                                  id: widget.id,
                                   userId: r['_id'],
-                                  cookType: selectedCook,
+                                  cookType: selectedCook.toList(),
                                   // fillingType: diteFilters.toList(),
-                                  filling: selectedFilling,
+                                  filling: selectedFilling.toList(),
                                 );
 
                                 ref
                                     .read(preferenceViewModelProvider.notifier)
-                                    .addPreference(preferenceModel, context);
+                                    .editPreference(preferenceModel, context);
                               });
                             }),
                             child: const Text(

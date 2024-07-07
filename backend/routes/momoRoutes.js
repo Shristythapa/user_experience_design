@@ -7,4 +7,7 @@ router.get("/getAllMomo", momoController.getAllMomo);
 router.get("/getMomoById", momoController.getMomoById);
 router.get("/getRatingByUser/:id", momoController.getRatingsByUser);
 router.get("/getRatingById/:id", momoController.getRatingById);
+router.post("/searchMomo", momoController.searchMomo);
+router.get("/getRecommendations/:id", momoController.recommendMomo);
+router.get("/getPopularMomo", momoController.getPopularMomo);
 module.exports = router;

@@ -5,7 +5,6 @@ import 'package:momo_rating_app_frontend/screens/dashboard/main_dashboard_page.d
 import 'package:momo_rating_app_frontend/screens/profile/my_preferences.dart';
 import 'package:momo_rating_app_frontend/screens/startings/landing.dart';
 import 'package:momo_rating_app_frontend/viewmodel/viewmodel/user_view_model.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class Profile extends ConsumerStatefulWidget {
   const Profile({super.key});
@@ -61,32 +60,51 @@ class _ProfileState extends ConsumerState<Profile> {
                     ),
                   ),
                 ),
-                Container(
-                  child: Column(
-                    children: [
-                      Center(
-                        child: Text(
+                const SizedBox(
+                  height: 40,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "Name",
+                          style: TextStyle(
+                              fontFamily: 'nunitoSans',
+                              fontWeight: FontWeight.w600,
+                              fontSize: 15),
+                        ),
+                        Text(
                           " ${userState.userDetails!['userName']}",
                           style: const TextStyle(
                               fontFamily: 'nunitoSans',
-                              fontWeight: FontWeight.w500,
+                              fontWeight: FontWeight.w400,
                               fontSize: 15),
                         ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Center(
-                        child: Text(
+                      ],
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "Email",
+                          style: TextStyle(
+                              fontFamily: 'nunitoSans',
+                              fontWeight: FontWeight.w600,
+                              fontSize: 15),
+                        ),
+                        Text(
                           "${userState.userDetails!['email']}",
                           style: const TextStyle(
                               fontFamily: 'nunitoSans',
-                              fontWeight: FontWeight.w700,
-                              fontSize: 18),
+                              fontWeight: FontWeight.w400,
+                              fontSize: 15),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+                  ],
                 ),
                 const SizedBox(
                   height: 10,
@@ -113,7 +131,7 @@ class _ProfileState extends ConsumerState<Profile> {
                   },
                   child: const Row(
                     children: [
-                      Icon(Icons.heart_broken_outlined),
+                      Icon(Icons.favorite_border),
                       Padding(
                           padding: EdgeInsets.symmetric(
                               horizontal: 50, vertical: 10),
@@ -123,7 +141,7 @@ class _ProfileState extends ConsumerState<Profile> {
                                 "Your Momo Preferences",
                                 style: TextStyle(
                                     fontFamily: 'nunitoSans',
-                                    fontWeight: FontWeight.w300,
+                                    fontWeight: FontWeight.w400,
                                     fontSize: 15),
                               ),
                             ],
@@ -133,50 +151,7 @@ class _ProfileState extends ConsumerState<Profile> {
                 ),
                 InkWell(
                   onTap: () async {
-                    // Show confirmation dialog
-                    bool confirmed = await showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: const Text('Logout'),
-                          content:
-                              const Text('Are you sure you want to logout?'),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                // Close the dialog and return false (not confirmed)
-                                Navigator.of(context).pop(false);
-                              },
-                              child: const Text('Cancel'),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                ref
-                                    .read(userSharedPrefsProvider)
-                                    .deleteUserToken();
-                                ref
-                                    .read(userSharedPrefsProvider)
-                                    .deleteUserDetails();
-                                Navigator.of(context).pop(true);
-                              },
-                              child: const Text('Logout'),
-                            ),
-                          ],
-                        );
-                      },
-                    );
-
-                    // Check if user confirmed logout
-                    if (confirmed == true) {
-                      SharedPreferences prefs =
-                          await SharedPreferences.getInstance();
-                      await prefs.remove("token");
-
-                      // Navigate to the GetStarted page
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(builder: (_) => const GetStarted()),
-                      );
-                    }
+                    _showDeleteConfirmationDialog(context, ref);
                   },
                   child: const Row(
                     children: [
@@ -188,7 +163,7 @@ class _ProfileState extends ConsumerState<Profile> {
                           "Logout",
                           style: TextStyle(
                               fontFamily: 'nunitoSans',
-                              fontWeight: FontWeight.w300,
+                              fontWeight: FontWeight.w400,
                               fontSize: 15),
                         ),
                       )
@@ -199,6 +174,66 @@ class _ProfileState extends ConsumerState<Profile> {
               ],
             ),
           )),
+    );
+  }
+
+  void _showDeleteConfirmationDialog(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          // shape: RoundedRectangleBorder(
+          //   borderRadius: BorderRadius.circular(10.0),
+          // ),
+          title: const Text(
+            textAlign: TextAlign.center,
+            "Are you sure you want to LogOut?",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
+          ),
+          content: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor:
+                      Colors.red, // Red background for Logout button
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.zero, // Remove rounded corners
+                  ),
+                ),
+                onPressed: () {
+                  ref.read(userSharedPrefsProvider).deleteUserToken();
+                  ref.read(userSharedPrefsProvider).deleteUserDetails();
+
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (_) => const GetStarted()),
+                  );
+                },
+                child: const Text(
+                  "Logout",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor:
+                      Colors.orange, // Orange background for Cancel button
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.zero, // Remove rounded corners
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                },
+                child: const Text(
+                  "Cancel",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

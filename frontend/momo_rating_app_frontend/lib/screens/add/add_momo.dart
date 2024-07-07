@@ -4,9 +4,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:momo_rating_app_frontend/core/shared_pref/user_shared_prefs.dart';
-import 'package:momo_rating_app_frontend/core/utils/cook_filter.dart';
-import 'package:momo_rating_app_frontend/core/utils/filling_filter.dart';
-import 'package:momo_rating_app_frontend/core/utils/dite_filter.dart';
+import 'package:momo_rating_app_frontend/core/utils/auto_complete_service.dart';
 import 'package:momo_rating_app_frontend/core/utils/snackbar.dart';
 import 'package:momo_rating_app_frontend/main.dart';
 import 'package:momo_rating_app_frontend/core/model/momo/momo_model.dart';
@@ -21,7 +19,6 @@ class AddMoMo extends ConsumerStatefulWidget {
 }
 
 class _AddMoMoState extends ConsumerState<AddMoMo> {
-  TextEditingController momoTitleController = TextEditingController();
   TextEditingController locationController = TextEditingController();
   TextEditingController shopController = TextEditingController();
   TextEditingController priceController = TextEditingController();
@@ -30,9 +27,9 @@ class _AddMoMoState extends ConsumerState<AddMoMo> {
   String? imageUrl;
   final form = GlobalKey<FormState>();
 
-  Set<Dite> diteFilters = {};
-  Set<FillingType> fillingFilters = {};
-  Set<CookType> cookFilters = {};
+  FillingType? selectedFillingType;
+  CookType? selectedCookType;
+
   // Check for the camera permission
   double rating = 0;
   // Check for the camera permission
@@ -56,6 +53,33 @@ class _AddMoMoState extends ConsumerState<AddMoMo> {
       }
     } catch (e) {
       debugPrint(e.toString());
+    }
+  }
+
+  final AutocompleteService autocompleteService = AutocompleteService(
+    apiKey: '5b3ce3597851110001cf6248e27dd441ba1c42f8b9d16c3310f3ada9',
+    apiUrl: 'https://api.openrouteservice.org',
+  );
+
+  List<Map<String, dynamic>> suggestions = [];
+  bool isLoading = false;
+
+  void fetchSuggestions(String query) async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      final results =
+          await autocompleteService.fetchAutocompleteSuggestions(query);
+      setState(() {
+        suggestions = results;
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      print(e);
     }
   }
 
@@ -92,13 +116,10 @@ class _AddMoMoState extends ConsumerState<AddMoMo> {
           child: Stack(
             children: [
               if (state.isLoading)
-                Positioned.fill(
-                  child: Container(
-                    color: Colors.black.withOpacity(0.5),
-                    child: const Center(
-                      child: CircularProgressIndicator(
-                        color: Colors.yellow,
-                      ),
+                const Positioned.fill(
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      color: Colors.yellow,
                     ),
                   ),
                 ),
@@ -166,59 +187,69 @@ class _AddMoMoState extends ConsumerState<AddMoMo> {
                             ),
                           ),
                         ),
-                        TextFormField(
-                          style: const TextStyle(
-                              color: Colors.black, fontSize: 20),
-                          controller: momoTitleController,
-                          validator: (String? value) {
-                            if (value == null || value.isEmpty) {
-                              return "Momo title is invalid";
-                            } else {
-                              return null;
-                            }
-                          },
-                          decoration: InputDecoration(
-                            errorStyle: TextStyle(color: Colors.red[900]),
-                            labelText: "momo title",
-                            labelStyle: const TextStyle(
-                              fontFamily: 'roboto',
-                              fontWeight: FontWeight.w500,
-                              fontSize: 15,
+
+                        Column(
+                          children: [
+                            TextFormField(
+                              style: const TextStyle(
+                                  color: Colors.black, fontSize: 20),
+                              controller: locationController,
+                              onChanged: fetchSuggestions,
+                              validator: (String? value) {
+                                if (value == null || value.isEmpty) {
+                                  return "Location is invalid";
+                                } else {
+                                  return null;
+                                }
+                              },
+                              decoration: InputDecoration(
+                                errorStyle: TextStyle(color: Colors.red[900]),
+                                labelText: "Location",
+                                prefixIcon: const Icon(Icons.location_on,
+                                    color: Color(0xFF000000)),
+                                labelStyle: const TextStyle(
+                                  fontFamily: 'roboto',
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 15,
+                                ),
+                                border: const UnderlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Colors.black)),
+                                focusedBorder: const UnderlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Colors.black)),
+                              ),
+                              keyboardType: TextInputType.text,
                             ),
-                            border: const UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black)),
-                            focusedBorder: const UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black)),
-                          ),
-                          keyboardType: TextInputType.text,
-                        ),
-                        TextFormField(
-                          style: const TextStyle(
-                              color: Colors.black, fontSize: 20),
-                          controller: locationController,
-                          validator: (String? value) {
-                            if (value == null || value.isEmpty) {
-                              return "location is invalid";
-                            } else {
-                              return null;
-                            }
-                          },
-                          decoration: InputDecoration(
-                            errorStyle: TextStyle(color: Colors.red[900]),
-                            labelText: "location",
-                            prefixIcon: const Icon(Icons.location_on,
-                                color: Color(0xFF000000)),
-                            labelStyle: const TextStyle(
-                              fontFamily: 'roboto',
-                              fontWeight: FontWeight.w500,
-                              fontSize: 15,
+                            if (isLoading) const CircularProgressIndicator(),
+                            Visibility(
+                              visible: suggestions.isNotEmpty,
+                              child: SizedBox(
+                                height: 200, // Adjust the height as needed
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  itemCount: suggestions.length,
+                                  itemBuilder: (context, index) {
+                                    final suggestion = suggestions[index];
+                                    return ListTile(
+                                      title: Text(suggestion['label']),
+                                      subtitle: Text(
+                                          '${suggestion['name']}, ${suggestion['state']}, ${suggestion['country']}'),
+                                      onTap: () {
+                                        // Set the locationController's text to the selected suggestion
+                                        locationController.text =
+                                            suggestion['label'];
+                                        // Clear suggestions
+                                        setState(() {
+                                          suggestions.clear();
+                                        });
+                                      },
+                                    );
+                                  },
+                                ),
+                              ),
                             ),
-                            border: const UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black)),
-                            focusedBorder: const UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black)),
-                          ),
-                          keyboardType: TextInputType.text,
+                          ],
                         ),
                         TextFormField(
                           style: const TextStyle(
@@ -276,24 +307,33 @@ class _AddMoMoState extends ConsumerState<AddMoMo> {
                           ),
                           keyboardType: TextInputType.number,
                         ),
-                        DiteFilter(
-                          filters: diteFilters,
-                          onSelectionChanged: (Set<Dite> dite) {
-                            diteFilters = dite;
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        buildPreferenceSection<FillingType>(
+                          'Filling Type',
+                          FillingType.values,
+                          selectedFillingType,
+                          (value) {
+                            setState(() {
+                              selectedFillingType = value;
+                            });
                           },
                         ),
-                        FillingFilter(
-                          filters: fillingFilters,
-                          onSelectionChanged: (Set<FillingType> filling) {
-                            fillingFilters = filling;
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        buildPreferenceSection<CookType>(
+                          'Cook Type',
+                          CookType.values,
+                          selectedCookType,
+                          (value) {
+                            setState(() {
+                              selectedCookType = value;
+                            });
                           },
                         ),
-                        CookFilter(
-                          filters: cookFilters,
-                          onSelectionChanged: (Set<CookType> selectedFilters) {
-                            cookFilters = selectedFilters;
-                          },
-                        ),
+
                         const SizedBox(
                           height: 15,
                         ),
@@ -306,6 +346,7 @@ class _AddMoMoState extends ConsumerState<AddMoMo> {
                         ),
                         // reviews
                         RatingBar.builder(
+                          itemPadding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
                           minRating: 0,
                           maxRating: 5,
                           itemBuilder: (context, _) => const Icon(
@@ -327,6 +368,7 @@ class _AddMoMoState extends ConsumerState<AddMoMo> {
                               fontWeight: FontWeight.bold),
                         ),
                         RatingBar.builder(
+                          itemPadding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
                           minRating: 0,
                           maxRating: 5,
                           itemBuilder: (context, _) => const Icon(
@@ -348,6 +390,7 @@ class _AddMoMoState extends ConsumerState<AddMoMo> {
                               fontWeight: FontWeight.bold),
                         ),
                         RatingBar.builder(
+                          itemPadding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
                           minRating: 0,
                           maxRating: 5,
                           itemBuilder: (context, _) => const Icon(
@@ -369,6 +412,7 @@ class _AddMoMoState extends ConsumerState<AddMoMo> {
                               fontWeight: FontWeight.bold),
                         ),
                         RatingBar.builder(
+                          itemPadding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
                           minRating: 0,
                           maxRating: 5,
                           itemBuilder: (context, _) => const Icon(
@@ -390,6 +434,7 @@ class _AddMoMoState extends ConsumerState<AddMoMo> {
                               fontWeight: FontWeight.bold),
                         ),
                         RatingBar.builder(
+                          itemPadding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
                           minRating: 0,
                           maxRating: 5,
                           itemBuilder: (context, _) => const Icon(
@@ -411,6 +456,7 @@ class _AddMoMoState extends ConsumerState<AddMoMo> {
                               fontWeight: FontWeight.bold),
                         ),
                         RatingBar.builder(
+                          itemPadding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
                           minRating: 0,
                           maxRating: 5,
                           itemBuilder: (context, _) => const Icon(
@@ -453,47 +499,63 @@ class _AddMoMoState extends ConsumerState<AddMoMo> {
                         const SizedBox(
                           height: 15,
                         ),
-                        ElevatedButton(
-                            onPressed: () async {
-                              if (form.currentState!.validate()) {
-                                var userId = await ref
-                                    .read(userSharedPrefsProvider)
-                                    .getUserDetails();
-                                userId.fold((l) {
-                                  return SnackBarManager.showSnackBar(
-                                      isError: true,
-                                      message: "User not found",
-                                      context: context);
-                                }, (r) {
-                                  MoMoApiModel moApiModel = MoMoApiModel(
-                                      userId: r['_id'],
-                                      momoName: momoTitleController.text,
-                                      momoPrice: priceController.text,
-                                      cookType: cookFilters.toString(),
-                                      fillingType: fillingFilters.toString(),
-                                      location: locationController.text,
-                                      shop: shopController.text);
-
-                                  ref
-                                      .read(moMoViewModelProvider.notifier)
-                                      .addMoMo(
-                                        image: _img,
-                                        moMoApiModel: moApiModel,
+                        SizedBox(
+                          width: double.infinity,
+                          height: 50,
+                          child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(
+                                    0xff43B13A), // Change button color to red
+                              ),
+                              onPressed: () async {
+                                if (form.currentState!.validate()) {
+                                  var userId = await ref
+                                      .read(userSharedPrefsProvider)
+                                      .getUserDetails();
+                                  userId.fold((l) {
+                                    return SnackBarManager.showSnackBar(
+                                        isError: true,
+                                        message: "User not found",
+                                        context: context);
+                                  }, (r) {
+                                    if (selectedFillingType == null ||
+                                        selectedCookType == null) {
+                                      return SnackBarManager.showSnackBar(
+                                          isError: true,
+                                          message:
+                                              "Filling and Cook type is required",
+                                          context: context);
+                                    }
+                                    MoMoApiModel moApiModel = MoMoApiModel(
                                         userId: r['_id'],
-                                        overallRating: overallTaste,
-                                        fillingAmount: 1,
-                                        sizeOfMomo: sizeOfMomo,
-                                        sauceVariety: sauceVariety,
-                                        aesthetic: aesthetics,
-                                        spiceLevel: spicyLevel,
-                                        priceValue: priceValue,
-                                        textReview: review.text,
-                                        context: context,
-                                      );
-                                });
-                              }
-                            },
-                            child: const Text("add momo"))
+                                        momoPrice: priceController.text,
+                                        cookType: selectedCookType.toString(),
+                                        fillingType:
+                                            selectedFillingType.toString(),
+                                        location: locationController.text,
+                                        shop: shopController.text);
+
+                                    ref
+                                        .read(moMoViewModelProvider.notifier)
+                                        .addMoMo(
+                                          image: _img,
+                                          moMoApiModel: moApiModel,
+                                          userId: r['_id'],
+                                          overallRating: overallTaste,
+                                          fillingAmount: 1,
+                                          sizeOfMomo: sizeOfMomo,
+                                          sauceVariety: sauceVariety,
+                                          aesthetic: aesthetics,
+                                          spiceLevel: spicyLevel,
+                                          priceValue: priceValue,
+                                          textReview: review.text,
+                                          context: context,
+                                        );
+                                  });
+                                }
+                              },
+                              child: const Text("add momo")),
+                        )
                       ],
                     ),
                   ),
@@ -503,6 +565,53 @@ class _AddMoMoState extends ConsumerState<AddMoMo> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget buildPreferenceSection<T>(String title, List<T> values,
+      T? selectedValue, void Function(T?) onValueChanged) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style:
+              const TextStyle(fontWeight: FontWeight.w700, color: Colors.black),
+        ),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: values.map((value) {
+            final isSelected = value == selectedValue;
+            return ChoiceChip(
+              label: Text(value.toString().split('.').last),
+              selected: isSelected,
+              onSelected: (selected) {
+                setState(() {
+                  if (selected) {
+                    onValueChanged(value);
+                  } else {
+                    onValueChanged(null);
+                  }
+                });
+              },
+              selectedColor: Colors.amber,
+              backgroundColor: const Color(0xffF1F1F1),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+                side: BorderSide(
+                  color: isSelected ? Colors.amber : Colors.transparent,
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+        const SizedBox(height: 24),
+        const Divider(
+          color: Color(0xffAEAEAE),
+        )
+      ],
     );
   }
 

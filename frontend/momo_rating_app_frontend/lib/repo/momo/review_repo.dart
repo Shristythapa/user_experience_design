@@ -3,7 +3,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:momo_rating_app_frontend/config/constants/api_endpoints.dart';
 import 'package:momo_rating_app_frontend/core/error/failure.dart';
-import 'package:momo_rating_app_frontend/core/model/momo/momo_model.dart';
 import 'package:momo_rating_app_frontend/core/network/http_service.dart';
 import 'package:momo_rating_app_frontend/core/shared_pref/user_shared_prefs.dart';
 import 'package:momo_rating_app_frontend/core/model/momo/review_model.dart';
@@ -35,7 +34,6 @@ class ReviewRepo {
 
       Response response =
           await dio.post(ApiEndpoints.addReview, data: formData);
-      print(response);
 
       if (response.statusCode == 200) {
         return const Right(true);
@@ -45,8 +43,9 @@ class ReviewRepo {
           error: response.data['message'],
           statusCode: response.statusCode.toString()));
     } on DioException catch (e) {
-      print(e);
-      return Left(Failure(error: "Network Error", statusCode: "404"));
+      return Left(Failure(
+          error: e.response!.data['message'],
+          statusCode: e.response!.statusCode.toString()));
     }
   }
 
@@ -55,22 +54,51 @@ class ReviewRepo {
     try {
       Response response =
           await dio.get('${ApiEndpoints.getRatingOfUser}$userId');
-
+      print(response);
       if (response.statusCode == 200) {
-        // Assuming your API returns a list of ratings in JSON format
-        List<dynamic> data = response
-            .data['data']; // Adjust based on actual API response structure
-        List<Review> ratings =
-            data.map((json) => Review.fromJson(json, json['momoId'])).toList();
-        return Right(ratings);
+        List<Review> reviews = [];
+        List ratings = response.data['ratings'];
+        for (var rating in ratings) {
+          String momoId = rating['momoId'];
+          String shop = rating['shop'];
+          String location = rating['location'];
+          String cookType = rating['cookType'];
+          String fillingType = rating['fillingType'];
+          String image = rating['momoImage'];
+          List reviewList = rating['ratings'];
+          for (var reviewData in reviewList) {
+            Review review = Review(
+              reviewId: reviewData['_id'],
+              userId: reviewData['userId'],
+              momoId: momoId,
+              shop: shop,
+              location: location,
+              cookType: cookType,
+              fillingType: fillingType,
+              image: image,
+              overallRating: reviewData['overallRating'],
+              fillingAmount: reviewData['fillingAmount'],
+              sizeOfMomo: reviewData['sizeOfMomo'],
+              sauceVariety: reviewData['sauceVariety'],
+              aesthectic: reviewData['aesthectic'],
+              spiceLevel: reviewData['spiceLevel'],
+              priceValue: reviewData['priceValue'],
+              review: reviewData['review'],
+            );
+            reviews.add(review);
+          }
+        }
+
+        return Right(reviews);
       }
 
       return Left(Failure(
           error: response.data['message'],
           statusCode: response.statusCode.toString()));
     } on DioException catch (e) {
-      print(e);
-      return Left(Failure(error: e.toString(), statusCode: "404"));
+      return Left(Failure(
+          error: e.response!.data['message'],
+          statusCode: e.response!.statusCode.toString()));
     } catch (e) {
       return Left(Failure(error: "Unexpected error", statusCode: "500"));
     }
@@ -78,14 +106,27 @@ class ReviewRepo {
 
   Future<Either<Failure, Review>> getRatingById(String ratingId) async {
     try {
-      Response response = await dio.get('${ApiEndpoints.getRatingById}$ratingId');
-
+      Response response =
+          await dio.get('${ApiEndpoints.getRatingById}$ratingId');
+      print(response);
       if (response.statusCode == 200) {
-        var ratingData = response.data['rating'];
-        var momoData = response.data['momo'];
-
-        Review review = Review.fromJson(ratingData,response.data['momo']['momoId']);
-        MoMoApiModel momo = MoMoApiModel.fromJson(momoData);
+        Review review = Review(
+            userId: response.data["rating"]["userId"],
+            momoId: response.data["momo"]["momoId"],
+            reviewId: response.data["rating"]["_id"],
+            overallRating: response.data["rating"]["overallRating"],
+            fillingAmount: response.data["rating"]["fillingAmount"],
+            sizeOfMomo: response.data["rating"]["sizeOfMomo"],
+            sauceVariety: response.data["rating"]["sauceVariety"],
+            aesthectic: response.data["rating"]["aesthectic"],
+            spiceLevel: response.data["rating"]["spiceLevel"],
+            priceValue: response.data["rating"]["priceValue"],
+            review: response.data["rating"]["review"],
+            cookType: response.data["momo"]["cookType"],
+            fillingType: response.data['momo']['fillingType'],
+            shop: response.data["momo"]["shop"],
+            location: response.data["momo"]["location"],
+            image: response.data["momo"]["momoImage"]);
 
         return Right(review);
       }
@@ -95,11 +136,32 @@ class ReviewRepo {
           statusCode: response.statusCode.toString()));
     } on DioException catch (e) {
       print(e);
-      return Left(Failure(error: e.toString(), statusCode: "404"));
+      return Left(Failure(
+          error: e.response!.data['message'],
+          statusCode: e.response!.statusCode.toString()));
     } catch (e) {
       return Left(Failure(error: "Unexpected error", statusCode: "500"));
     }
   }
+
+  Future<Either<Failure, bool>> deleteReview({required String reviewId}) async {
+    try {
+      final response = await dio.post(ApiEndpoints.deleteRating + reviewId);
+
+      if (response.statusCode == 200) {
+        return const Right(true);
+      }
+
+      return Left(Failure(
+          error: response.data['message'],
+          statusCode: response.statusCode.toString()));
+    } on DioException catch (e) {
+      if (e.response != null) {
+        return Left(Failure(
+            error: e.response!.data['message'],
+            statusCode: e.response!.statusCode.toString()));
+      }
+      return Left(Failure(error: e.error.toString(), statusCode: '0'));
+    }
+  }
 }
-
-

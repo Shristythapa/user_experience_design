@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:momo_rating_app_frontend/core/utils/cook_chip_list.dart';
-import 'package:momo_rating_app_frontend/core/utils/dite_list_chip.dart';
 import 'package:momo_rating_app_frontend/core/utils/filling_list_chip.dart';
-
+import 'package:momo_rating_app_frontend/screens/profile/edit_preferences.dart';
 import 'package:momo_rating_app_frontend/screens/profile/profile_page.dart';
 import 'package:momo_rating_app_frontend/viewmodel/viewmodel/preference_view_model.dart';
 
@@ -31,8 +30,14 @@ class _MyPreferencesState extends ConsumerState<MyPreferences> {
       child: Scaffold(
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            // Add your onPressed functionality here
-            // This is where you would typically navigate to the edit screen or perform an edit action
+            Navigator.of(context).pop();
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => EditiPreferences(
+                        id: state.preferenceModel!.id!,
+                      )),
+            );
           },
           tooltip: 'Edit',
           child: const Icon(Icons.edit),
@@ -62,25 +67,25 @@ class _MyPreferencesState extends ConsumerState<MyPreferences> {
           child: state.preferenceModel != null
               ? Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     const SizedBox(
                       height: 10,
                     ),
-                    const Text(
-                      "Dite",
-                      style: TextStyle(
-                          fontWeight: FontWeight.w700, color: Colors.black),
-                    ),
-                    DiteListChip(
-                      selectedItems: state.preferenceModel!.fillingType,
-                    ),
-                    const Divider(
-                      color: Colors.grey,
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
+                    // const Text(
+                    //   "Dite",
+                    //   style: TextStyle(
+                    //       fontWeight: FontWeight.w700, color: Colors.black),
+                    // ),
+                    // DiteListChip(
+                    //   selectedItems: state.preferenceModel!.fillingType,
+                    // ),
+                    // const Divider(
+                    //   color: Colors.grey,
+                    // ),
+                    // const SizedBox(
+                    //   height: 10,
+                    // ),
                     const Text(
                       "Filling Type",
                       style: TextStyle(
@@ -91,6 +96,9 @@ class _MyPreferencesState extends ConsumerState<MyPreferences> {
                     ),
                     const Divider(
                       color: Colors.grey,
+                    ),
+                    const SizedBox(
+                      height: 50,
                     ),
                     const SizedBox(
                       height: 20,
@@ -105,6 +113,9 @@ class _MyPreferencesState extends ConsumerState<MyPreferences> {
                     ),
                     const Divider(
                       color: Colors.grey,
+                    ),
+                    const SizedBox(
+                      height: 10,
                     ),
                     const SizedBox(
                       height: 20,

@@ -40,7 +40,9 @@ class SaveMomoRepo {
           statusCode: response.statusCode.toString()));
     } on DioException catch (e) {
       if (e.response != null) {
-        return Left(Failure(error: "Api Error", statusCode: "404"));
+        return Left(Failure(
+            error: e.response!.data['message'],
+            statusCode: e.response!.statusCode.toString()));
       }
       return Left(Failure(error: e.error.toString(), statusCode: '0'));
     }
@@ -95,13 +97,13 @@ class SaveMomoRepo {
     try {
       final response = await dio.get('${ApiEndpoints.getSavedMomo}$userId');
       if (response.statusCode == 200) {
+        print(response);
         var momos = response.data['data'];
         List<MoMoApiModel> momoList = [];
         for (var momo in momos) {
           momoList.add(MoMoApiModel(
-              id: momo['_id'],
+              id: momo['momoId']['_id'],
               userId: momo['userId'],
-              momoName: momo['momoId']['momoName'],
               momoPrice: momo['momoId']['momoPrice'].toString(),
               cookType: momo['momoId']['cookType'],
               momoImage: momo['momoId']['momoImage'],

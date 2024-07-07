@@ -19,19 +19,40 @@ const addRating = async (req, res) => {
   } = req.body;
 
   if (!userId || !momoId) {
-    return res.json({
+    return res.status(400).json({
       success: false,
       message: "Enter all feilds",
     });
   }
 
-  const existingUser = await User.findOne({ userId: userId });
+  const existingUser = await User.findOne({ _id: userId });
 
   if (!existingUser) {
-    return res.status(400).json("User doesn't exist.");
+    return res.status(400).json({
+      message: "User doesn't exist.",
+      success: false,
+    });
   }
 
   try {
+    const momofi = await Momo.findById(momoId).populate("reviews");
+    if (!momofi) {
+      return res.status(404).json({
+        message: "Momo not found.",
+        success: false,
+      });
+    }
+
+    // Check if the user has already added a review for the same momo
+    const existingRating = momofi.reviews.find(
+      (review) => review.userId.toString() === userId
+    );
+    if (existingRating) {
+      return res.status(400).json({
+        success: false,
+        message: "Review for this momo already added.",
+      });
+    }
     console.log("savig review");
     const newRating = new Rating({
       userId: userId,
@@ -57,16 +78,22 @@ const addRating = async (req, res) => {
     );
 
     // Calculate new average overall rating
-    const ratings = await Rating.find({ momoId: momoId });
+    const ratings = await Rating.find({ _id: { $in: momo.reviews } });
+    console.log(ratings);
     const totalRatings = ratings.length;
-    const sumRatings = ratings.reduce(
-      (acc, rating) => acc + rating.overallRating,
-      0
-    );
-    const avgRating = sumRatings / totalRatings;
+    if (totalRatings > 0) {
+      const sumRatings = ratings.reduce(
+        (acc, rating) => acc + rating.overallRating,
+        0
+      );
+      const avgRating = sumRatings / totalRatings;
 
-    momo.overallRating = avgRating;
-    await momo.save();
+      momo.overallRating = avgRating;
+      await momo.save();
+    } else {
+      momo.overallRating = overallRating;
+      await momo.save();
+    }
 
     res.status(200).json({
       success: true,
@@ -138,101 +165,8 @@ const deleteRating = async (req, res) => {
   }
 };
 
-// const getRatingsByUser = async (req, res) => {
-//   const { id } = req.params; // Assuming userId is passed as a parameter
-
-//   try {
-//     const userRatings = await Rating.find({ userId: id }).populate(
-//       "momoId"
-//     ); // Assuming 'momoId' is the reference field
-
-//     if (!userRatings) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "No ratings found for the user.",
-//       });
-//     }
-
-//     res.status(200).json({
-//       success: true,
-//       message: "User ratings retrieved successfully.",
-//       data: userRatings,
-//     });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({
-//       success: false,
-//       message: "Server error.",
-//     });
-//   }
-// };
-
-const getRatingsByUser = async (req, res) => {
-  const { id } = req.params; // Assuming userId is passed as a parameter
-  try {
-    const userRatings = await Rating.find({ userId: id })
-      .populate({
-        path: "momo", // https://stackoverflow.com/questions/74441286/how-to-load-referenced-document-in-mongoose
-        model: "momo",
-        select:
-          "momoName momoImage momoPrice cookType fillingType location shop overallRating",
-      })
-      .exec();
-    if (userRatings != null) {
-      return res.status(200).json({
-        message: "Ratigns",
-        ratings: userRatings,
-        success: true,
-      });
-    } else {
-      return res.status(400).json({
-        message: "ratings not found",
-
-        success: false,
-      });
-    }
-  } catch (error) {
-    return res.status(400).json({
-      message: error,
-      success: false,
-    });
-  }
-};
-const getRatingById = async (req, res) => {
-  const { id } = req.params; // Assuming ratingId is passed as a parameter
-  try {
-    const rating = await Rating.findById(id)
-      .populate({
-        path: "momo", // Ensure you have a reference to 'momo' in your Rating model
-        model: "momo",
-        select:
-          "momoName momoImage momoPrice cookType fillingType location shop overallRating",
-      })
-      .exec();
-
-    if (rating) {
-      return res.status(200).json({
-        message: "Rating found",
-        rating: rating,
-        success: true,
-      });
-    } else {
-      return res.status(400).json({
-        message: "Rating not found",
-        success: false,
-      });
-    }
-  } catch (error) {
-    return res.status(500).json({
-      message: error.message,
-      success: false,
-    });
-  }
-};
 
 module.exports = {
   addRating,
-  getRatingsByUser,
-  getRatingById,
-  deleteRating
+  deleteRating,
 };

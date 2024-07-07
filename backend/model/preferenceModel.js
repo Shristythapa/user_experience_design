@@ -8,13 +8,11 @@ const preferenceSchema = mongoose.Schema({
     required: true,
   },
   cookType: {
-    type: String,
+    type: [String], 
   },
-  fillingType: {
-    type: String,
-  },
+
   filling: {
-    type: String,
+    type: [String], // Allow filling to be an array of strings
   },
 });
 

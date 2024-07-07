@@ -2,46 +2,47 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:momo_rating_app_frontend/core/shared_pref/user_shared_prefs.dart';
 import 'package:momo_rating_app_frontend/core/utils/snackbar.dart';
+import 'package:momo_rating_app_frontend/screens/dashboard/main_dashboard_page.dart';
 import 'package:momo_rating_app_frontend/viewmodel/viewmodel/momo_view_model.dart';
-import 'package:momo_rating_app_frontend/viewmodel/viewmodel/save_momo_view_model.dart';
-import 'package:momo_rating_app_frontend/viewmodel/viewmodel/user_view_model.dart';
 import 'package:rate_in_stars/rate_in_stars.dart';
 
-class SavedMomos extends ConsumerStatefulWidget {
-  const SavedMomos({super.key});
+class SearchResult extends ConsumerStatefulWidget {
+  const SearchResult({super.key});
 
   @override
-  ConsumerState<SavedMomos> createState() => _SavedMomosState();
+  ConsumerState<SearchResult> createState() => _SearchResultState();
 }
 
-class _SavedMomosState extends ConsumerState<SavedMomos> {
-  @override
-  void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref
-          .read(saveMoMoViewModelProvider.notifier)
-          .getSavedMomo(ref.read(userViewModelProvider).userDetails!['_id']);
-    });
-    super.initState();
-  }
-
+class _SearchResultState extends ConsumerState<SearchResult> {
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(saveMoMoViewModelProvider);
+    final state = ref.watch(moMoViewModelProvider);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (state.showMessage) {
         SnackBarManager.showSnackBar(
-            isError: ref.read(saveMoMoViewModelProvider).isError,
-            message: ref.read(saveMoMoViewModelProvider).message,
+            isError: ref.read(moMoViewModelProvider).isError,
+            message: ref.read(moMoViewModelProvider).message,
             context: context);
-        ref.read(saveMoMoViewModelProvider.notifier).resetState();
+        ref.read(moMoViewModelProvider.notifier).resetState();
       }
     });
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.of(context).pop();
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const MainDashboard(),
+                ),
+              );
+            },
+          ),
           title: const Text(
-            "Saved MoMo",
+            "Search Result",
             style: TextStyle(
               color: Colors.black,
               fontSize: 25,
@@ -49,44 +50,40 @@ class _SavedMomosState extends ConsumerState<SavedMomos> {
             ),
           ),
         ),
-        body: state.momos.isEmpty
-            ? const Center(
-                child: Text("No momos saved"),
-              )
-            : Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  itemBuilder: (context, index) {
-                    return InkWell(
-                      onTap: () async {
-                        var userId = await ref
-                            .read(userSharedPrefsProvider)
-                            .getUserDetails();
-                        userId.fold((l) {
-                          return SnackBarManager.showSnackBar(
-                              isError: true,
-                              message: "User not found",
-                              context: context);
-                        }, (r) {
-                          ref.read(moMoViewModelProvider.notifier).getMomoById(
-                              state.momos[index].id!, r['_id'], context);
-                        });
-                      },
-                      child: buildCard(
-                          state.momos[index].momoImage ?? 'image/mmm.png',
-                          state.momos[index].fillingType,
-                          state.momos[index].cookType,
-                          state.momos[index].shop,
-                          state.momos[index].location,
-                          state.momos[index].momoPrice,
-                          state.momos[index].overallRating ?? 0.0),
-                    );
-                  },
-                  itemCount: state.momos.length,
-                ),
-              ),
+        body: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ListView.builder(
+            scrollDirection: Axis.vertical,
+            shrinkWrap: true,
+            itemBuilder: (context, index) {
+              return InkWell(
+                onTap: () async {
+                  var userId =
+                      await ref.read(userSharedPrefsProvider).getUserDetails();
+                  userId.fold((l) {
+                    return SnackBarManager.showSnackBar(
+                        isError: true,
+                        message: "User not found",
+                        context: context);
+                  }, (r) {
+                    ref
+                        .read(moMoViewModelProvider.notifier)
+                        .getMomoById(state.momo[index].id!, r['_id'], context);
+                  });
+                },
+                child: buildCard(
+                    state.momo[index].momoImage ?? 'image/mmm.png',
+                    state.momo[index].fillingType,
+                    state.momo[index].cookType,
+                    state.momo[index].shop,
+                    state.momo[index].location,
+                    state.momo[index].momoPrice,
+                    state.momo[index].overallRating ?? 0.0),
+              );
+            },
+            itemCount: state.momo.length,
+          ),
+        ),
       ),
     );
   }

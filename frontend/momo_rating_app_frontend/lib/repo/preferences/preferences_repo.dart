@@ -38,8 +38,9 @@ class PreferenceRepo {
           statusCode: response.statusCode.toString()));
     } on DioException catch (e) {
       if (e.response != null) {
-        return Left(
-            Failure(error: e.response!.data['message'], statusCode: '404'));
+        return Left(Failure(
+            error: e.response!.data['message'],
+            statusCode: e.response!.statusCode.toString()));
       }
       return Left(Failure(error: e.error.toString(), statusCode: '200'));
     }
@@ -67,8 +68,36 @@ class PreferenceRepo {
           Failure(error: "User Detail not found", statusCode: 404.toString()));
     } on DioException catch (e) {
       if (e.response != null) {
-        return Left(
-            Failure(error: e.response!.data['message'], statusCode: '404'));
+        return Left(Failure(
+            error: e.response!.data['message'],
+            statusCode: e.response!.statusCode.toString()));
+      }
+      return Left(Failure(error: e.error.toString(), statusCode: '200'));
+    }
+  }
+
+  Future<Either<Failure, bool>> editPreferences(
+      PreferenceModel preference) async {
+    try {
+      FormData formData = FormData.fromMap(preference.toJson());
+
+      Response response = await dio.post(
+          ApiEndpoints.editPreferences + preference.id!,
+          data: formData,
+          options: Options(headers: {'Content-Type': 'multipart/form-data'}));
+      print(response);
+      if (response.statusCode == 200) {
+        return const Right(true);
+      }
+
+      return Left(Failure(
+          error: response.data['message'],
+          statusCode: response.statusCode.toString()));
+    } on DioException catch (e) {
+      if (e.response != null) {
+        return Left(Failure(
+            error: e.response!.data['message'],
+            statusCode: e.response!.statusCode.toString()));
       }
       return Left(Failure(error: e.error.toString(), statusCode: '200'));
     }
