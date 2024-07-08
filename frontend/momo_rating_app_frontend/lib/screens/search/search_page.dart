@@ -90,7 +90,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                                 return ListTile(
                                   title: Text(suggestion['label']),
                                   subtitle: Text(
-                                      '${suggestion['name']}, ${suggestion['state']}, ${suggestion['country']}'),
+                                      '${suggestion['name']}, ${suggestion['country']}'),
                                   onTap: () {
                                     // Set the locationController's text to the selected suggestion
                                     searchBarController.text =

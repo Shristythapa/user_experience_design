@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:momo_rating_app_frontend/core/shared_pref/user_shared_prefs.dart';
 import 'package:momo_rating_app_frontend/core/utils/snackbar.dart';
 import 'package:momo_rating_app_frontend/viewmodel/viewmodel/dashboard_view_model.dart';
 import 'package:momo_rating_app_frontend/viewmodel/viewmodel/momo_view_model.dart';
@@ -14,6 +15,7 @@ class MainDashboard extends ConsumerStatefulWidget {
 class _MainDashboardState extends ConsumerState<MainDashboard> {
   @override
   void initState() {
+    ref.read(userSharedPrefsProvider).getUserDetails();
     super.initState();
   }
 

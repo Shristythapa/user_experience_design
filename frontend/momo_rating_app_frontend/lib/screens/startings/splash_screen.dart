@@ -21,11 +21,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     navigateToNextScreen();
   }
 
-  Future<void> _authenticate(Widget nextScreen) async {
-    Navigator.of(context)
-        .pushReplacement(MaterialPageRoute(builder: (_) => nextScreen));
-  }
-
   Future<void> navigateToNextScreen() async {
     // Fetch the token
     SharedPreferences prefs = await SharedPreferences.getInstance();

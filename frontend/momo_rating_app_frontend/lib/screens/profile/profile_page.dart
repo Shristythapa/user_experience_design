@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:momo_rating_app_frontend/core/shared_pref/user_shared_prefs.dart';
 import 'package:momo_rating_app_frontend/screens/dashboard/main_dashboard_page.dart';
+import 'package:momo_rating_app_frontend/screens/profile/faq_page.dart';
 import 'package:momo_rating_app_frontend/screens/profile/my_preferences.dart';
 import 'package:momo_rating_app_frontend/screens/startings/landing.dart';
 import 'package:momo_rating_app_frontend/viewmodel/viewmodel/user_view_model.dart';
@@ -167,6 +168,34 @@ class _ProfileState extends ConsumerState<Profile> {
                               fontSize: 15),
                         ),
                       )
+                    ],
+                  ),
+                ),
+                InkWell(
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const FaqPage()),
+                    );
+                  },
+                  child: const Row(
+                    children: [
+                      Icon(Icons.question_mark_outlined),
+                      Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 50, vertical: 10),
+                          child: Wrap(
+                            children: <Widget>[
+                              Text(
+                                "FAQ",
+                                style: TextStyle(
+                                    fontFamily: 'nunitoSans',
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 15),
+                              ),
+                            ],
+                          ))
                     ],
                   ),
                 ),

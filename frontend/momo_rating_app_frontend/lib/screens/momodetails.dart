@@ -6,6 +6,7 @@ import 'package:momo_rating_app_frontend/core/model/momo/momo_model.dart';
 import 'package:momo_rating_app_frontend/core/model/momo/review_model.dart';
 import 'package:momo_rating_app_frontend/screens/add/add_review.dart';
 import 'package:momo_rating_app_frontend/screens/dashboard/main_dashboard_page.dart';
+import 'package:momo_rating_app_frontend/viewmodel/viewmodel/rating_view_model.dart';
 import 'package:momo_rating_app_frontend/viewmodel/viewmodel/save_momo_view_model.dart';
 import 'package:rate_in_stars/rate_in_stars.dart';
 
@@ -19,27 +20,9 @@ class MoMoDetails extends ConsumerStatefulWidget {
 }
 
 class _MoMoDetailsState extends ConsumerState<MoMoDetails> {
-  late dynamic user; // Declare a variable to store the user information
 
   var lab = const SizedBox(height: 25);
 
-  Future<void> _getUserDetails() async {
-    var userResult = await ref.read(userSharedPrefsProvider).getUserDetails();
-    userResult.fold(
-      (failure) {
-        SnackBarManager.showSnackBar(
-          isError: true,
-          message: "Token Invalid",
-          context: context,
-        );
-      },
-      (fetchedUser) {
-        setState(() {
-          user = fetchedUser;
-        });
-      },
-    );
-  }
 
   Map<String, double> _calculateAverageRatings(List<Review> reviews) {
     int totalReviews = reviews.length;
@@ -80,6 +63,16 @@ class _MoMoDetailsState extends ConsumerState<MoMoDetails> {
             message: ref.read(saveMoMoViewModelProvider).message,
             context: context);
         ref.read(saveMoMoViewModelProvider.notifier).resetState();
+      }
+    });
+    final review = ref.watch(reviewViewModelProvider);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (review.showMessage) {
+        SnackBarManager.showSnackBar(
+            isError: ref.read(reviewViewModelProvider).isError,
+            message: ref.read(reviewViewModelProvider).message,
+            context: context);
+        ref.read(reviewViewModelProvider.notifier).resetState();
       }
     });
     Map<String, double> averages =

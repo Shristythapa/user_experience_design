@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:momo_rating_app_frontend/core/shared_pref/user_shared_prefs.dart';
@@ -9,6 +11,7 @@ import 'package:momo_rating_app_frontend/viewmodel/viewmodel/momo_view_model.dar
 import 'package:momo_rating_app_frontend/viewmodel/viewmodel/rating_view_model.dart';
 import 'package:momo_rating_app_frontend/viewmodel/viewmodel/user_view_model.dart';
 import 'package:rate_in_stars/rate_in_stars.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Dashboard extends ConsumerStatefulWidget {
   const Dashboard({super.key});
@@ -20,16 +23,16 @@ class Dashboard extends ConsumerStatefulWidget {
 class _DashboardState extends ConsumerState<Dashboard> {
   final ScrollController _forYouScrollController = ScrollController();
   final ScrollController _popularScrollController = ScrollController();
-  void fetchData(BuildContext context, WidgetRef ref) {
+  Future<void> fetchData(BuildContext context, WidgetRef ref) async {
     try {
-      // Retrieve user details first
-      ref.read(userViewModelProvider.notifier).getUserDetails();
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final String userJson = prefs.getString('user')!;
 
-      // Proceed to fetch recommendations and popular items once user details are retrieved
-      final userId = ref.read(userViewModelProvider).userDetails!['_id'];
+      // Deserialize the JSON string to a map
+      Map<String, dynamic> userData = jsonDecode(userJson);
       ref
           .read(recommedationMomoViewModelProvider.notifier)
-          .getRecommendations(userId);
+          .getRecommendations(userData['_id']);
       ref.read(popularMomoViewModelProvider.notifier).getPopular();
     } catch (e) {
       // Handle any errors that may occur
@@ -39,10 +42,12 @@ class _DashboardState extends ConsumerState<Dashboard> {
 
   @override
   void initState() {
-    ref.read(userViewModelProvider.notifier).getUserDetails();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(userViewModelProvider.notifier).getUserDetails();
+      fetchData(context, ref);
+    });
 
     super.initState();
-    fetchData(context, ref);
   }
 
   @override
@@ -55,9 +60,9 @@ class _DashboardState extends ConsumerState<Dashboard> {
   @override
   Widget build(BuildContext context) {
     final userState = ref.watch(userViewModelProvider);
-    final state = ref.watch(moMoViewModelProvider);
+    final state = ref.watch(recommedationMomoViewModelProvider);
     final popularState = ref.watch(popularMomoViewModelProvider);
-    final reviewState = ref.watch(reviewViewModelProvider);
+    ref.watch(reviewViewModelProvider);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (userState.message != null) {
@@ -67,13 +72,13 @@ class _DashboardState extends ConsumerState<Dashboard> {
             context: context);
         ref.read(userViewModelProvider.notifier).resetState();
       }
-      if (reviewState.message.isNotEmpty && reviewState.showMessage) {
-        SnackBarManager.showSnackBar(
-            isError: reviewState.isError,
-            message: reviewState.message,
-            context: context);
-        ref.read(reviewViewModelProvider.notifier).resetState();
-      }
+      // if (reviewState.message.isNotEmpty && reviewState.showMessage) {
+      //   SnackBarManager.showSnackBar(
+      //       isError: reviewState.isError,
+      //       message: reviewState.message,
+      //       context: context);
+      //   ref.read(reviewViewModelProvider.notifier).resetState();
+      // }
     });
 
     return SafeArea(

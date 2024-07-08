@@ -5,6 +5,7 @@ import 'package:momo_rating_app_frontend/core/model/momo/momo_model.dart';
 import 'package:momo_rating_app_frontend/main.dart';
 import 'package:momo_rating_app_frontend/repo/momo/momo_repo.dart';
 import 'package:momo_rating_app_frontend/repo/momo/review_repo.dart';
+import 'package:momo_rating_app_frontend/screens/dashboard/main_dashboard_page.dart';
 import 'package:momo_rating_app_frontend/screens/momodetails.dart';
 import 'package:momo_rating_app_frontend/screens/search/search_result.dart';
 import 'package:momo_rating_app_frontend/viewmodel/state/momo_state.dart';
@@ -53,6 +54,36 @@ class MoMoViewModel extends StateNotifier<MoMoState> {
           isError: true);
       return;
     }
+    moMoRemoteRepo
+        .addMoMo(
+            image: image,
+            moMoApiModel: moMoApiModel,
+            overallRating: overallRating,
+            fillingAmount: fillingAmount,
+            sizeOfMomo: sizeOfMomo,
+            sauceVariety: sauceVariety,
+            spiceLevel: spiceLevel,
+            aesthetic: aesthetic,
+            priceValue: priceValue,
+            textReview: textReview)
+        .then((value) {
+      value.fold(
+          (failure) => state = state.copyWith(
+              message: failure.error,
+              isLoading: false,
+              showMessage: true,
+              isError: true), (success) {
+        state = state.copyWith(
+            isLoading: false,
+            showMessage: true,
+            message: "MoMo Added Sucessfully");
+        Navigator.of(context).pop();
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const MainDashboard()),
+        );
+      });
+    });
   }
 
   Future<void> getAllMomos() async {
@@ -104,12 +135,10 @@ class MoMoViewModel extends StateNotifier<MoMoState> {
           showMessage: true,
           isLoading: false);
     }, (data) {
-      state = state.copyWith(
-          isError: false, isLoading: false, momo: data);
+      state = state.copyWith(isError: false, isLoading: false, momo: data);
       Navigator.of(context).pop();
       Navigator.push(context,
           MaterialPageRoute(builder: (context) => const SearchResult()));
     });
   }
-
 }

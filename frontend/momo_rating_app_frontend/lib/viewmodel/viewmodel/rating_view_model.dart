@@ -16,7 +16,7 @@ class ReviewViewModel extends StateNotifier<RatingState> {
   ReviewViewModel({required this.reviewRepo})
       : super(RatingState.initialState());
 
-  Future<void> resetState() async {
+  Future resetState() async {
     state = RatingState.initialState();
   }
 
@@ -60,7 +60,7 @@ class ReviewViewModel extends StateNotifier<RatingState> {
           (failure) => state = state.copyWith(
               message: failure.error,
               isLoading: false,
-              showMessage: true,
+              showMessage: false,
               isError: true), (success) {
         state = state.copyWith(
             isLoading: false,
@@ -108,14 +108,16 @@ class ReviewViewModel extends StateNotifier<RatingState> {
           showMessage: true,
           isLoading: false);
     }, (data) {
-      state = state.copyWith(isError: false, isLoading: false);
-      if (context.mounted) {
-        Navigator.pop(context); 
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const MainDashboard()),
-        );
-      }
+      state = state.copyWith(
+          isError: false,
+          showMessage: true,
+          message: "Review Deleted Succefully",
+          isLoading: false);
+      Navigator.pop(context);
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const MainDashboard()),
+      );
     });
   }
 }

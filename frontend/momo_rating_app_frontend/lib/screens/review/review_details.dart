@@ -17,59 +17,21 @@ class ReviewDetails extends ConsumerStatefulWidget {
 }
 
 class _ReviewDetailsState extends ConsumerState<ReviewDetails> {
-  late dynamic user; // Declare a variable to store the user information
-
   var lab = const SizedBox(height: 25);
-
-  Future<void> _getUserDetails() async {
-    var userResult = await ref.read(userSharedPrefsProvider).getUserDetails();
-    userResult.fold(
-      (failure) {
-        SnackBarManager.showSnackBar(
-          isError: true,
-          message: "Token Invalid",
-          context: context,
-        );
-      },
-      (fetchedUser) {
-        setState(() {
-          user = fetchedUser; // Update the user variable with fetched user
-        });
-      },
-    );
-  }
-
-  Map<String, double> _calculateAverageRatings(List<Review> reviews) {
-    int totalReviews = reviews.length;
-
-    double overallRating =
-        reviews.fold(0, (sum, item) => sum + item.overallRating) / totalReviews;
-    double fillingAmount =
-        reviews.fold(0, (sum, item) => sum + item.fillingAmount) / totalReviews;
-    double sizeOfMomo =
-        reviews.fold(0, (sum, item) => sum + item.sizeOfMomo) / totalReviews;
-    double sauceVariety =
-        reviews.fold(0, (sum, item) => sum + item.sauceVariety) / totalReviews;
-    double aesthetic =
-        reviews.fold(0, (sum, item) => sum + item.aesthectic) / totalReviews;
-    double spiceLevel =
-        reviews.fold(0, (sum, item) => sum + item.spiceLevel) / totalReviews;
-    double priceValue =
-        reviews.fold(0, (sum, item) => sum + item.priceValue) / totalReviews;
-
-    return {
-      'overallRating': overallRating,
-      'fillingAmount': fillingAmount,
-      'sizeOfMomo': sizeOfMomo,
-      'sauceVariety': sauceVariety,
-      'aesthetic': aesthetic,
-      'spiceLevel': spiceLevel,
-      'priceValue': priceValue,
-    };
-  }
 
   @override
   Widget build(BuildContext context) {
+    final reviewState = ref.watch(reviewViewModelProvider);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (reviewState.showMessage) {
+        SnackBarManager.showSnackBar(
+            isError: reviewState.isError,
+            message: reviewState.message,
+            context: context);
+        ref.read(reviewViewModelProvider.notifier).resetState();
+      }
+    });
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -217,13 +179,9 @@ class _ReviewDetailsState extends ConsumerState<ReviewDetails> {
                   height: 50,
                   child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(
-                            0xffDB5858), // Change button color to red
+                        backgroundColor: const Color(0xffDB5858),
                       ),
                       onPressed: () {
-                        // ref
-                        //     .read(reviewViewModelProvider.notifier)
-                        //     .deleteReview(widget.review.reviewId!, context);
                         _showDeleteConfirmationDialog(context, ref);
                       },
                       child: const Text(
@@ -239,43 +197,11 @@ class _ReviewDetailsState extends ConsumerState<ReviewDetails> {
     );
   }
 
-  // void _showDeleteConfirmationDialog(BuildContext context, WidgetRef ref) {
-  //   showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return AlertDialog(
-  //         title: const Text("Confirm Delete"),
-  //         content: const Text("Are you sure you want to delete this review?"),
-  //         actions: [
-  //           TextButton(
-  //             child: const Text("Cancel"),
-  //             onPressed: () {
-  //               Navigator.of(context).pop(); // Close the dialog
-  //             },
-  //           ),
-  //           TextButton(
-  //             child: const Text("Delete"),
-  //             onPressed: () {
-  //               ref
-  //                   .read(reviewViewModelProvider.notifier)
-  //                   .deleteReview(widget.review.reviewId!, context);
-  //               Navigator.of(context).pop(); // Close the dialog after deletion
-  //             },
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
-
   void _showDeleteConfirmationDialog(BuildContext context, WidgetRef ref) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          // shape: RoundedRectangleBorder(
-          //   borderRadius: BorderRadius.circular(10.0),
-          // ),
           title: const Text(
             textAlign: TextAlign.center,
             "Are you sure you want to delete this review?",
@@ -296,11 +222,6 @@ class _ReviewDetailsState extends ConsumerState<ReviewDetails> {
                   ref
                       .read(reviewViewModelProvider.notifier)
                       .deleteReview(widget.review.reviewId!, context);
-                  Navigator.of(context).pop();
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const MainDashboard()));
                 },
                 child: const Text(
                   "Delete",
