@@ -6,6 +6,7 @@ import 'package:momo_rating_app_frontend/screens/profile/faq_page.dart';
 import 'package:momo_rating_app_frontend/screens/profile/my_preferences.dart';
 import 'package:momo_rating_app_frontend/screens/startings/landing.dart';
 import 'package:momo_rating_app_frontend/viewmodel/viewmodel/user_view_model.dart';
+import 'package:photo_view/photo_view.dart';
 
 class Profile extends ConsumerStatefulWidget {
   const Profile({super.key});
@@ -199,10 +200,37 @@ class _ProfileState extends ConsumerState<Profile> {
                     ],
                   ),
                 ),
+                SizedBox(
+                  width: double.infinity,
+                  child: GestureDetector(
+                    onTap: () => _showZoomableImage(context),
+                    child: Image.asset(
+                      "image/ux.png",
+                      width: 100,
+                      height: 100,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
                 const Expanded(child: SizedBox())
               ],
             ),
           )),
+    );
+  }
+
+  void _showZoomableImage(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          child:  PhotoView(
+            backgroundDecoration:
+                const BoxDecoration(color: Colors.transparent),
+            imageProvider: const AssetImage("image/ux.png"),
+          ),
+        );
+      },
     );
   }
 
