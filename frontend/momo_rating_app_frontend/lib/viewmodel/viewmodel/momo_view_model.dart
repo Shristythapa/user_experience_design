@@ -54,6 +54,7 @@ class MoMoViewModel extends StateNotifier<MoMoState> {
           isError: true);
       return;
     }
+
     moMoRemoteRepo
         .addMoMo(
             image: image,

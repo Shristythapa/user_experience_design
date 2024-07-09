@@ -118,8 +118,8 @@ Widget buildReviewCard(
                       ),
                     ),
                     Text(
-                      RegExp(r'\.(.*?)\}').firstMatch(title) != null
-                          ? "${RegExp(r'\.(.*?)\}').firstMatch(title)!.group(1)!} ${RegExp(r'\.(.*?)\}').firstMatch(cook)!.group(1)!}"
+                      RegExp(r'\.(.*)').firstMatch(title) != null
+                          ? "${RegExp(r'\.(.*)').firstMatch(title)!.group(1)!} ${RegExp(r'\.(.*)').firstMatch(cook)!.group(1)!}"
                           : '',
                       style: const TextStyle(
                           fontWeight: FontWeight.w600, fontSize: 12),
@@ -148,7 +148,7 @@ Widget buildReviewCard(
       ),
       const SizedBox(
         height: 20,
-      ) 
+      )
     ],
   );
 }

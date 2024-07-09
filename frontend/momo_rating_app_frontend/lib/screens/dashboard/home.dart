@@ -263,8 +263,8 @@ class _DashboardState extends ConsumerState<Dashboard> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Text(
-                    RegExp(r'\.(.*?)\}').firstMatch(type) != null
-                        ? "${RegExp(r'\.(.*?)\}').firstMatch(type)!.group(1)!} ${RegExp(r'\.(.*?)\}').firstMatch(cook)!.group(1)!}"
+                    RegExp(r'\.(.*)').firstMatch(type) != null
+                        ? "${RegExp(r'\.(.*)').firstMatch(type)!.group(1)!} ${RegExp(r'\.(.*)').firstMatch(cook)!.group(1)!}"
                         : '',
                     style: const TextStyle(
                         fontWeight: FontWeight.w600, fontSize: 12),
@@ -279,31 +279,43 @@ class _DashboardState extends ConsumerState<Dashboard> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.restaurant,
-                        size: 20,
-                      ),
-                      Text(
-                        shop,
-                        style: const TextStyle(
-                            fontWeight: FontWeight.w600, fontSize: 12),
-                      ),
-                    ],
+                  SizedBox(
+                    width: 80,
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.restaurant,
+                          size: 20,
+                        ),
+                        Expanded(
+                          child: Text(
+                            shop,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                                fontWeight: FontWeight.w600, fontSize: 12),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.location_on,
-                        size: 20,
-                      ),
-                      Text(
-                        location,
-                        style: const TextStyle(
-                            fontWeight: FontWeight.w600, fontSize: 12),
-                      ),
-                    ],
+                  SizedBox(
+                    width: 100,
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.location_on,
+                          size: 20,
+                        ),
+                        Expanded(
+                          child: Text(
+                            overflow: TextOverflow.ellipsis,
+                            location,
+                            style: const TextStyle(
+                                fontWeight: FontWeight.w600, fontSize: 12),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),

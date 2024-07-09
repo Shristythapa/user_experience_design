@@ -20,9 +20,7 @@ class MoMoDetails extends ConsumerStatefulWidget {
 }
 
 class _MoMoDetailsState extends ConsumerState<MoMoDetails> {
-
   var lab = const SizedBox(height: 25);
-
 
   Map<String, double> _calculateAverageRatings(List<Review> reviews) {
     int totalReviews = reviews.length;
@@ -138,10 +136,10 @@ class _MoMoDetailsState extends ConsumerState<MoMoDetails> {
               children: [
                 Center(
                   child: Text(
-                    RegExp(r'\.(.*?)\}')
+                    RegExp(r'\.(.*)')
                                 .firstMatch(widget.moApiModel.fillingType) !=
                             null
-                        ? "${RegExp(r'\.(.*?)\}').firstMatch(widget.moApiModel.fillingType)!.group(1)!} ${RegExp(r'\.(.*?)\}').firstMatch(widget.moApiModel.cookType)!.group(1)!}"
+                        ? "${RegExp(r'\.(.*)').firstMatch(widget.moApiModel.fillingType)!.group(1)!} ${RegExp(r'\.(.*)').firstMatch(widget.moApiModel.cookType)!.group(1)!}"
                         : "",
                     style: const TextStyle(
                         fontSize: 20, fontWeight: FontWeight.w700),

@@ -88,13 +88,12 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                               itemBuilder: (context, index) {
                                 final suggestion = suggestions[index];
                                 return ListTile(
-                                  title: Text(suggestion['label']),
-                                  subtitle: Text(
-                                      '${suggestion['name']}, ${suggestion['country']}'),
+                                  title: Text(suggestion['name']),
+                                  subtitle: Text('${suggestion['label']}'),
                                   onTap: () {
                                     // Set the locationController's text to the selected suggestion
                                     searchBarController.text =
-                                        suggestion['label'];
+                                        suggestion['name'];
                                     // Clear suggestions
                                     setState(() {
                                       suggestions.clear();

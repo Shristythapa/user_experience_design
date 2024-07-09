@@ -128,14 +128,14 @@ Widget buildCard(String image, String title, String cook, String shop,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Column(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         Text(
-                          RegExp(r'\.(.*?)\}').firstMatch(title) != null
-                              ? "${RegExp(r'\.(.*?)\}').firstMatch(title)!.group(1)!} ${RegExp(r'\.(.*?)\}').firstMatch(cook)!.group(1)!}"
+                          RegExp(r'\.(.*)').firstMatch(title) != null
+                              ? "${RegExp(r'\.(.*)').firstMatch(title)!.group(1)!} ${RegExp(r'\.(.*)').firstMatch(cook)!.group(1)!}"
                               : '',
                           style: const TextStyle(
                               fontWeight: FontWeight.w600, fontSize: 12),
@@ -162,18 +162,25 @@ Widget buildCard(String image, String title, String cook, String shop,
                           style: const TextStyle(
                               fontWeight: FontWeight.w600, fontSize: 12),
                         ),
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.location_on,
-                              size: 20,
-                            ),
-                            Text(
-                              location,
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.w600, fontSize: 12),
-                            ),
-                          ],
+                        SizedBox(
+                          width: 120,
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.location_on,
+                                size: 20,
+                              ),
+                              Expanded(
+                                child: Text(
+                                  overflow: TextOverflow.ellipsis,
+                                  location,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 12),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     )

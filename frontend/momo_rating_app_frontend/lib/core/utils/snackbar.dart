@@ -15,7 +15,7 @@ class SnackBarManager {
             SnackBar(
               content: Text(message),
               backgroundColor: isError ? Colors.red : Colors.green,
-              duration: const Duration(seconds: 5),
+              duration: const Duration(seconds: 3),
               behavior: SnackBarBehavior.floating,
             ),
           )

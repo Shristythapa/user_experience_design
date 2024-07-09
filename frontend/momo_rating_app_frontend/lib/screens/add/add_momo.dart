@@ -232,13 +232,12 @@ class _AddMoMoState extends ConsumerState<AddMoMo> {
                                   itemBuilder: (context, index) {
                                     final suggestion = suggestions[index];
                                     return ListTile(
-                                      title: Text(suggestion['label']),
-                                      subtitle: Text(
-                                          '${suggestion['name']},${suggestion['country']}'),
+                                      title: Text(suggestion['name']),
+                                      subtitle: Text('${suggestion['lable']}'),
                                       onTap: () {
                                         // Set the locationController's text to the selected suggestion
                                         locationController.text =
-                                            suggestion['label'];
+                                            suggestion['name'];
                                         // Clear suggestions
                                         setState(() {
                                           suggestions.clear();

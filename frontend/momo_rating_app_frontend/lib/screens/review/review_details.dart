@@ -54,7 +54,7 @@ class _ReviewDetailsState extends ConsumerState<ReviewDetails> {
               children: [
                 Center(
                   child: Text(
-                    " Your Rating on ${RegExp(r'\.(.*?)\}').firstMatch(widget.review.fillingType!)!.group(1)!} ${RegExp(r'\.(.*?)\}').firstMatch(widget.review.cookType!)!.group(1)!} Momo",
+                    " Your Rating on ${RegExp(r'\.(.*)').firstMatch(widget.review.fillingType!)!.group(1)!} ${RegExp(r'\.(.*)').firstMatch(widget.review.cookType!)!.group(1)!} Momo",
                     style: const TextStyle(
                         fontSize: 20, fontWeight: FontWeight.w700),
                   ),
@@ -213,9 +213,9 @@ class _ReviewDetailsState extends ConsumerState<ReviewDetails> {
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor:
-                      Colors.red, // Red background for Logout button
+                      Colors.red, 
                   shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.zero, // Remove rounded corners
+                    borderRadius: BorderRadius.zero, 
                   ),
                 ),
                 onPressed: () {

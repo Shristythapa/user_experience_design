@@ -64,7 +64,7 @@ class ReviewViewModel extends StateNotifier<RatingState> {
               isError: true), (success) {
         state = state.copyWith(
             isLoading: false,
-            showMessage: true,
+            showMessage: false,
             review: success,
             message: "Review Added Sucessfully");
       });
