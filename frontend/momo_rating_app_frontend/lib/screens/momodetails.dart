@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:momo_rating_app_frontend/core/shared_pref/user_shared_prefs.dart';
 import 'package:momo_rating_app_frontend/core/utils/snackbar.dart';
@@ -215,13 +216,31 @@ class _MoMoDetailsState extends ConsumerState<MoMoDetails> {
                   ],
                 ),
                 ..._buildReviewList(widget.moApiModel.reviews),
+                const SizedBox(
+                  height: 20,
+                ),
                 SizedBox(
                   width: double.infinity,
                   height: 50,
                   child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          const Color(0xff43B13A), // Change button color to red
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStateProperty.resolveWith<Color>(
+                          (Set<WidgetState> states) {
+                        if (states.contains(WidgetState.hovered)) {
+                          return const Color(
+                              0xff2C8C24);
+                        } else {
+                          return const Color(0xff43B13A); 
+                        }
+                      }),
+                      overlayColor: WidgetStateProperty.resolveWith<Color>(
+                          (Set<WidgetState> states) {
+                        if (states.contains(WidgetState.pressed)) {
+                          return const Color(
+                              0xff1F6B18); 
+                        }
+                        return Colors.transparent;
+                      }),
                     ),
                     onPressed: () async {
                       Navigator.of(context).pop();
@@ -233,7 +252,10 @@ class _MoMoDetailsState extends ConsumerState<MoMoDetails> {
                                 )),
                       );
                     },
-                    child: const Text("Add Rewiew"),
+                    child: const Text(
+                      "Go to Add Rewiew",
+                      style: TextStyle(fontSize: 15),
+                    ),
                   ),
                 )
               ],
@@ -268,15 +290,39 @@ class _MoMoDetailsState extends ConsumerState<MoMoDetails> {
       return [const Text("No reviews available")];
     }
     return reviews.map((review) {
-      return Container(
+      return SizedBox(
         width: double.infinity,
-        padding: const EdgeInsets.all(20),
-        child: Card(
-          color: Colors.white,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10.0),
-            child: Center(child: Text(review.review)),
-          ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ListTile(
+              leading: CircleAvatar(
+                backgroundImage:
+                    NetworkImage(review.userId.profileImageUrl ?? ''),
+              ),
+              title: Text(
+                review.userId.userName ?? 'Unknown User',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              subtitle: RatingBar.builder(
+                initialRating: review.overallRating.toDouble(),
+                minRating: 1,
+                direction: Axis.horizontal,
+                allowHalfRating: true,
+                itemCount: 5,
+                itemSize: 20.0,
+                itemBuilder: (context, _) => const Icon(
+                  Icons.star,
+                  color: Colors.amber,
+                ),
+                onRatingUpdate: (rating) {},
+                ignoreGestures: true,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(review.review),
+            const Divider()
+          ],
         ),
       );
     }).toList();

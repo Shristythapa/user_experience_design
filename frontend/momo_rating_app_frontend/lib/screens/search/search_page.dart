@@ -133,7 +133,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
               ),
               const SizedBox(height: 50),
-              // buildPreferenceSection<Dite>('Diet', Dite.values, selectedDiet),
+           
               buildPreferenceSection<FillingType>(
                   'Filling', FillingType.values, selectedFilling),
               const SizedBox(height: 24),
@@ -163,6 +163,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
           children: values.map((value) {
             final isSelected = selectedValues.contains(value);
             return ChoiceChip(
+              // elevation: !isSelected ? 2 : 2,
               label: Text(value.toString().split('.').last),
               selected: isSelected,
               onSelected: (selected) {

@@ -43,7 +43,6 @@ class _FaqPageState extends State<FaqPage> {
         headerText: "How can I add my favorite Momo shop to the app?",
         expandedText:
             "Users can suggest new Momo shops and varieties by filling out a form within the app."),
-    Item(headerText: "Third question", expandedText: "Third question answer"),
   ];
 
   @override

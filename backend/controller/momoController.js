@@ -128,13 +128,23 @@ const getMomoById = async (req, res) => {
 
     console.log("get momo by id..");
     // Find the momo by ID and populate reviews
-    const momo = await Momo.findById(momoId).populate("reviews").exec();
-    if (!momo) {
-      return res.status(404).json({
-        success: false,
-        message: "Momo not found",
-      });
-    }
+    // const momo = await Momo.findById(momoId).populate("reviews").exec();
+    // if (!momo) {
+    //   return res.status(404).json({
+    //     success: false,
+    //     message: "Momo not found",
+    //   });
+    // }
+
+    const momo = await Momo.findById(momoId)
+      .populate({
+        path: "reviews",
+        populate: {
+          path: "userId",
+          select: "userName profileImageUrl",
+        },
+      })
+      .exec();
 
     // Check if the momo is saved by the user
     const savedMomo = await SavedMomo.findOne({ userId, momoId });

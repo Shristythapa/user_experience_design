@@ -287,9 +287,27 @@ class _AddReviewState extends ConsumerState<AddReview> {
                       width: double.infinity,
                       height: 50,
                       child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(
-                              0xff43B13A), // Change button color to red
+                        style: ButtonStyle(
+                          // elevation: 3,
+                          backgroundColor:
+                              WidgetStateProperty.resolveWith<Color>(
+                                  (Set<WidgetState> states) {
+                            if (states.contains(WidgetState.hovered)) {
+                              return const Color(
+                                  0xff2C8C24); 
+                            } else {
+                              return const Color(
+                                  0xff43B13A); 
+                            }
+                          }),
+                          overlayColor: WidgetStateProperty.resolveWith<Color>(
+                              (Set<WidgetState> states) {
+                            if (states.contains(WidgetState.pressed)) {
+                              return const Color(
+                                  0xff1F6B18);
+                            }
+                            return Colors.transparent;
+                          }),
                         ),
                         onPressed: () async {
                           var userId = await ref
@@ -318,7 +336,10 @@ class _AddReviewState extends ConsumerState<AddReview> {
                                     context: context);
                           });
                         },
-                        child: const Text("Add Rewiew"),
+                        child: const Text(
+                          "Add Rewiew",
+                          style: TextStyle(fontSize: 15),
+                        ),
                       ),
                     )
                   ],

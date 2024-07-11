@@ -502,58 +502,80 @@ class _AddMoMoState extends ConsumerState<AddMoMo> {
                           width: double.infinity,
                           height: 50,
                           child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(
-                                    0xff43B13A), // Change button color to red
-                              ),
-                              onPressed: () async {
-                                if (form.currentState!.validate()) {
-                                  var userId = await ref
-                                      .read(userSharedPrefsProvider)
-                                      .getUserDetails();
-                                  userId.fold((l) {
-                                    return SnackBarManager.showSnackBar(
-                                        isError: true,
-                                        message: "User not found",
-                                        context: context);
-                                  }, (r) {
-                                    if (selectedFillingType == null ||
-                                        selectedCookType == null) {
-                                      return SnackBarManager.showSnackBar(
-                                          isError: true,
-                                          message:
-                                              "Filling and Cook type is required",
-                                          context: context);
-                                    }
-                                    MoMoApiModel moApiModel = MoMoApiModel(
-                                        userId: r['_id'],
-                                        momoPrice: priceController.text,
-                                        cookType: selectedCookType.toString(),
-                                        fillingType:
-                                            selectedFillingType.toString(),
-                                        location: locationController.text,
-                                        shop: shopController.text);
-
-                                    ref
-                                        .read(moMoViewModelProvider.notifier)
-                                        .addMoMo(
-                                          image: _img,
-                                          moMoApiModel: moApiModel,
-                                          userId: r['_id'],
-                                          overallRating: overallTaste,
-                                          fillingAmount: 1,
-                                          sizeOfMomo: sizeOfMomo,
-                                          sauceVariety: sauceVariety,
-                                          aesthetic: aesthetics,
-                                          spiceLevel: spicyLevel,
-                                          priceValue: priceValue,
-                                          textReview: review.text,
-                                          context: context,
-                                        );
-                                  });
+                            style: ButtonStyle(
+                              // elevation: 3,
+                              backgroundColor:
+                                  WidgetStateProperty.resolveWith<Color>(
+                                      (Set<WidgetState> states) {
+                                if (states.contains(WidgetState.hovered)) {
+                                  return const Color(0xff2C8C24);
+                                } else {
+                                  return const Color(0xff43B13A);
                                 }
-                              },
-                              child: const Text("add momo")),
+                              }),
+                              overlayColor:
+                                  WidgetStateProperty.resolveWith<Color>(
+                                      (Set<WidgetState> states) {
+                                if (states.contains(WidgetState.pressed)) {
+                                  return const Color(0xff1F6B18);
+                                }
+                                return Colors.transparent;
+                              }),
+                            ),
+                            onPressed: () async {
+                              if (form.currentState!.validate()) {
+                                var userId = await ref
+                                    .read(userSharedPrefsProvider)
+                                    .getUserDetails();
+                                userId.fold((l) {
+                                  return SnackBarManager.showSnackBar(
+                                    isError: true,
+                                    message: "User not found",
+                                    context: context,
+                                  );
+                                }, (r) {
+                                  if (selectedFillingType == null ||
+                                      selectedCookType == null) {
+                                    return SnackBarManager.showSnackBar(
+                                      isError: true,
+                                      message:
+                                          "Filling and Cook type is required",
+                                      context: context,
+                                    );
+                                  }
+                                  MoMoApiModel moApiModel = MoMoApiModel(
+                                    userId: r['_id'],
+                                    momoPrice: priceController.text,
+                                    cookType: selectedCookType.toString(),
+                                    fillingType: selectedFillingType.toString(),
+                                    location: locationController.text,
+                                    shop: shopController.text,
+                                  );
+
+                                  ref
+                                      .read(moMoViewModelProvider.notifier)
+                                      .addMoMo(
+                                        image: _img,
+                                        moMoApiModel: moApiModel,
+                                        userId: r['_id'],
+                                        overallRating: overallTaste,
+                                        fillingAmount: 1,
+                                        sizeOfMomo: sizeOfMomo,
+                                        sauceVariety: sauceVariety,
+                                        aesthetic: aesthetics,
+                                        spiceLevel: spicyLevel,
+                                        priceValue: priceValue,
+                                        textReview: review.text,
+                                        context: context,
+                                      );
+                                });
+                              }
+                            },
+                            child: const Text(
+                              "Add MoMo",
+                              style: TextStyle(fontSize: 15),
+                            ),
+                          ),
                         )
                       ],
                     ),

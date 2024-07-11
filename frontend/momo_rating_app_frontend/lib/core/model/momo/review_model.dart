@@ -1,6 +1,8 @@
+import 'package:momo_rating_app_frontend/core/model/auth/user_model.dart';
+
 class Review {
   final String? reviewId;
-  final String userId;
+  final User userId;
   final String momoId;
   final String? shop;
   final String? location;
@@ -38,7 +40,7 @@ class Review {
   factory Review.fromJson(Map<String, dynamic> json, String momoId) {
     return Review(
       reviewId: json['_id'],
-      userId: json['userId'],
+      userId: User.fromJson(json['userId']),
       momoId: momoId,
       overallRating: json['overallRating'],
       fillingAmount: json['fillingAmount'],
