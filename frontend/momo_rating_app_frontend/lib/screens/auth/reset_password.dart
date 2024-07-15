@@ -146,8 +146,6 @@ class _ResetPasswordState extends ConsumerState<ResetPassword> {
                                     return null;
                                   }
                                 },
-                                obscureText: !showPassword,
-                                obscuringCharacter: '*',
                                 decoration: InputDecoration(
                                   errorStyle: TextStyle(color: Colors.red[900]),
                                   labelText: "otp",
@@ -186,7 +184,7 @@ class _ResetPasswordState extends ConsumerState<ResetPassword> {
                                 obscuringCharacter: '*',
                                 decoration: InputDecoration(
                                   errorStyle: TextStyle(color: Colors.red[900]),
-                                  labelText: "password",
+                                  labelText: " new password",
                                   labelStyle: const TextStyle(
                                     fontFamily: 'roboto',
                                     fontWeight: FontWeight.w500,
@@ -273,6 +271,10 @@ class _ResetPasswordState extends ConsumerState<ResetPassword> {
                                   child: const Text(
                                     "Go to login?",
                                     style: TextStyle(
+                                      decoration: TextDecoration.underline,
+                                      decorationColor: Color(0xffFFA70B),
+                                      decorationThickness: 2,
+                                      color: Color(0xffFFA70B),
                                       fontFamily: 'roboto',
                                       fontWeight: FontWeight.w500,
                                     ),

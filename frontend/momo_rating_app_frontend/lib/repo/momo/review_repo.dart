@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:momo_rating_app_frontend/config/constants/api_endpoints.dart';
 import 'package:momo_rating_app_frontend/core/error/failure.dart';
+import 'package:momo_rating_app_frontend/core/model/auth/user_model.dart';
 import 'package:momo_rating_app_frontend/core/network/http_service.dart';
 import 'package:momo_rating_app_frontend/core/shared_pref/user_shared_prefs.dart';
 import 'package:momo_rating_app_frontend/core/model/momo/review_model.dart';
@@ -20,7 +21,7 @@ class ReviewRepo {
   Future<Either<Failure, bool>> addRewiew(Review reviewModel) async {
     try {
       FormData formData = FormData.fromMap({
-        'userId': reviewModel.userId,
+        'userId': reviewModel.userId.userId,
         'momoId': reviewModel.momoId,
         'overallRating': reviewModel.overallRating,
         'fillingAmount': reviewModel.fillingAmount,
@@ -69,7 +70,7 @@ class ReviewRepo {
           for (var reviewData in reviewList) {
             Review review = Review(
               reviewId: reviewData['_id'],
-              userId: reviewData['userId'],
+              userId: User.fromJson(reviewData['userId']),
               momoId: momoId,
               shop: shop,
               location: location,
@@ -96,6 +97,7 @@ class ReviewRepo {
           error: response.data['message'],
           statusCode: response.statusCode.toString()));
     } on DioException catch (e) {
+      print(e);
       return Left(Failure(
           error: e.response!.data['message'],
           statusCode: e.response!.statusCode.toString()));
@@ -111,7 +113,7 @@ class ReviewRepo {
       print(response);
       if (response.statusCode == 200) {
         Review review = Review(
-            userId: response.data["rating"]["userId"],
+            userId: User.fromJson(response.data["rating"]["userId"]),
             momoId: response.data["momo"]["momoId"],
             reviewId: response.data["rating"]["_id"],
             overallRating: response.data["rating"]["overallRating"],

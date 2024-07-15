@@ -243,6 +243,10 @@ class _LoginState extends ConsumerState<Login> {
                                   child: const Text(
                                     "Don't have an account?",
                                     style: TextStyle(
+                                      decoration: TextDecoration.underline,
+                                      decorationColor: Color(0xffFFA70B),
+                                      decorationThickness: 2,
+                                      color: Color(0xffFFA70B),
                                       fontFamily: 'roboto',
                                       fontWeight: FontWeight.w500,
                                     ),
@@ -265,6 +269,10 @@ class _LoginState extends ConsumerState<Login> {
                                   child: const Text(
                                     "Forogt Password?",
                                     style: TextStyle(
+                                      decoration: TextDecoration.underline,
+                                      decorationColor: Color(0xffFFA70B),
+                                      decorationThickness: 2,
+                                      color: Color(0xffFFA70B),
                                       fontFamily: 'roboto',
                                       fontWeight: FontWeight.w500,
                                     ),

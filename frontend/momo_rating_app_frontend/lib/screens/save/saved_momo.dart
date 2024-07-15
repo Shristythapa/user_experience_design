@@ -94,109 +94,118 @@ class _SavedMomosState extends ConsumerState<SavedMomos> {
 
 Widget buildCard(String image, String title, String cook, String shop,
     String location, String price, double rating) {
-  return Card(
-    elevation: 5,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(20.0),
-    ),
-    color: Colors.white,
-    child: Container(
-      width: 380,
-      height: 150,
-      decoration: BoxDecoration(
+  return Column(
+    children: [
+      Card(
+        elevation: 5,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20.0),
+        ),
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20.0),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Container(
-              width: 100,
-              height: 100,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: NetworkImage(image),
-                  fit: BoxFit.cover,
-                ),
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-            ),
-            Column(
+        child: Container(
+          width: 380,
+          height: 150,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20.0),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
-              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                Container(
+                  width: 100,
+                  height: 100,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: NetworkImage(image),
+                      fit: BoxFit.cover,
+                    ),
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Text(
-                          RegExp(r'\.(.*)').firstMatch(title) != null
-                              ? "${RegExp(r'\.(.*)').firstMatch(title)!.group(1)!} ${RegExp(r'\.(.*)').firstMatch(cook)!.group(1)!}"
-                              : '',
-                          style: const TextStyle(
-                              fontWeight: FontWeight.w600, fontSize: 12),
-                        ),
-                        Row(
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            const Icon(
-                              Icons.restaurant,
-                              size: 20,
-                            ),
                             Text(
-                              shop,
+                              RegExp(r'\.(.*)').firstMatch(title) != null
+                                  ? "${RegExp(r'\.(.*)').firstMatch(title)!.group(1)!} ${RegExp(r'\.(.*)').firstMatch(cook)!.group(1)!}"
+                                  : '',
                               style: const TextStyle(
                                   fontWeight: FontWeight.w600, fontSize: 12),
                             ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        Text(
-                          price,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.w600, fontSize: 12),
-                        ),
-                        SizedBox(
-                          width: 120,
-                          child: Row(
-                            children: [
-                              const Icon(
-                                Icons.location_on,
-                                size: 20,
-                              ),
-                              Expanded(
-                                child: Text(
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.restaurant,
+                                  size: 20,
+                                ),
+                                Text(
                                   overflow: TextOverflow.ellipsis,
-                                  location,
+                                  shop,
                                   style: const TextStyle(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 12),
                                 ),
-                              ),
-                            ],
-                          ),
+                              ],
+                            ),
+                          ],
                         ),
+                        Column(
+                          children: [
+                            Text(
+                              price,
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.w600, fontSize: 12),
+                            ),
+                            SizedBox(
+                              width: 120,
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.location_on,
+                                    size: 20,
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      overflow: TextOverflow.ellipsis,
+                                      location,
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 12),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        )
                       ],
-                    )
+                    ),
+                    RatingStars(
+                      rating: rating,
+                      editable: true,
+                      iconSize: 28,
+                      color: const Color.fromARGB(255, 255, 187, 52),
+                    ),
                   ],
-                ),
-                RatingStars(
-                  rating: rating,
-                  editable: true,
-                  iconSize: 28,
-                  color: const Color.fromARGB(255, 255, 187, 52),
                 ),
               ],
             ),
-          ],
+          ),
         ),
       ),
-    ),
+      const SizedBox(
+        height: 10,
+      )
+    ],
   );
 }

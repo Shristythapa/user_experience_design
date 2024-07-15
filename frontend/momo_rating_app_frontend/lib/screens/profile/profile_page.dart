@@ -4,6 +4,7 @@ import 'package:momo_rating_app_frontend/core/shared_pref/user_shared_prefs.dart
 import 'package:momo_rating_app_frontend/screens/dashboard/main_dashboard_page.dart';
 import 'package:momo_rating_app_frontend/screens/profile/faq_page.dart';
 import 'package:momo_rating_app_frontend/screens/profile/my_preferences.dart';
+import 'package:momo_rating_app_frontend/screens/profile/ui_flow_diagram.dart';
 import 'package:momo_rating_app_frontend/screens/startings/landing.dart';
 import 'package:momo_rating_app_frontend/viewmodel/viewmodel/user_view_model.dart';
 import 'package:photo_view/photo_view.dart';
@@ -122,6 +123,9 @@ class _ProfileState extends ConsumerState<Profile> {
                       fontWeight: FontWeight.w600,
                       fontSize: 15),
                 ),
+                const SizedBox(
+                  height: 20,
+                ),
                 InkWell(
                   onTap: () {
                     Navigator.of(context).pop();
@@ -131,46 +135,37 @@ class _ProfileState extends ConsumerState<Profile> {
                           builder: (context) => const MyPreferences()),
                     );
                   },
-                  child: const Row(
-                    children: [
-                      Icon(Icons.favorite_border),
-                      Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 50, vertical: 10),
-                          child: Wrap(
-                            children: <Widget>[
-                              Text(
-                                "Your Momo Preferences",
-                                style: TextStyle(
-                                    fontFamily: 'nunitoSans',
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 15),
-                              ),
-                            ],
-                          ))
-                    ],
+                  child: const Card(
+                    elevation: 5,
+                    child: Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          SizedBox(
+                            width: 20,
+                          ),
+                          Icon(Icons.favorite_border),
+                          Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 10),
+                              child: Wrap(
+                                children: <Widget>[
+                                  Text(
+                                    "Your Momo Preferences",
+                                    style: TextStyle(
+                                        fontFamily: 'nunitoSans',
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 15),
+                                  ),
+                                ],
+                              ))
+                        ],
+                      ),
+                    ),
                   ),
                 ),
-                InkWell(
-                  onTap: () async {
-                    _showDeleteConfirmationDialog(context, ref);
-                  },
-                  child: const Row(
-                    children: [
-                      Icon(Icons.logout),
-                      Padding(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 50, vertical: 10),
-                        child: Text(
-                          "Logout",
-                          style: TextStyle(
-                              fontFamily: 'nunitoSans',
-                              fontWeight: FontWeight.w400,
-                              fontSize: 15),
-                        ),
-                      )
-                    ],
-                  ),
+                const SizedBox(
+                  height: 20,
                 ),
                 InkWell(
                   onTap: () {
@@ -180,35 +175,106 @@ class _ProfileState extends ConsumerState<Profile> {
                       MaterialPageRoute(builder: (context) => const FaqPage()),
                     );
                   },
-                  child: const Row(
-                    children: [
-                      Icon(Icons.question_mark_outlined),
-                      Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 50, vertical: 10),
-                          child: Wrap(
-                            children: <Widget>[
-                              Text(
-                                "FAQ",
-                                style: TextStyle(
-                                    fontFamily: 'nunitoSans',
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 15),
-                              ),
-                            ],
-                          ))
-                    ],
+                  child: const Card(
+                    elevation: 5,
+                    child: Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          SizedBox(
+                            width: 20,
+                          ),
+                          Icon(Icons.question_mark_outlined),
+                          Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 10),
+                              child: Wrap(
+                                children: <Widget>[
+                                  Text(
+                                    "FAQ",
+                                    style: TextStyle(
+                                        fontFamily: 'nunitoSans',
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 15),
+                                  ),
+                                ],
+                              ))
+                        ],
+                      ),
+                    ),
                   ),
                 ),
-                SizedBox(
-                  width: double.infinity,
-                  child: GestureDetector(
-                    onTap: () => _showZoomableImage(context),
-                    child: Image.asset(
-                      "image/ux.png",
-                      width: 100,
-                      height: 100,
-                      fit: BoxFit.cover,
+                const SizedBox(
+                  height: 20,
+                ),
+                InkWell(
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const UiFlowDiagram()),
+                    );
+                  },
+                  child: const Card(
+                    elevation: 5,
+                    child: Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Row(
+                        children: [
+                          SizedBox(
+                            width: 20,
+                          ),
+                          Icon(Icons.search),
+                          Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 10),
+                              child: Wrap(
+                                children: <Widget>[
+                                  Text(
+                                    "Find app features",
+                                    style: TextStyle(
+                                        fontFamily: 'nunitoSans',
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 15),
+                                  ),
+                                ],
+                              ))
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                InkWell(
+                  onTap: () async {
+                    _showDeleteConfirmationDialog(context, ref);
+                  },
+                  child: const Card(
+                    elevation: 5,
+                    child: Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          SizedBox(
+                            width: 20,
+                          ),
+                          Icon(Icons.logout),
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 10),
+                            child: Text(
+                              "Logout",
+                              style: TextStyle(
+                                  fontFamily: 'nunitoSans',
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 15),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -224,7 +290,7 @@ class _ProfileState extends ConsumerState<Profile> {
       context: context,
       builder: (context) {
         return Dialog(
-          child:  PhotoView(
+          child: PhotoView(
             backgroundDecoration:
                 const BoxDecoration(color: Colors.transparent),
             imageProvider: const AssetImage("image/ux.png"),

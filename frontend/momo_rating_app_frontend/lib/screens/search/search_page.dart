@@ -89,7 +89,8 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                                 final suggestion = suggestions[index];
                                 return ListTile(
                                   title: Text(suggestion['name']),
-                                  subtitle: Text('${suggestion['label']}'),
+                                  // subtitle: Text(
+                                  //     '${suggestion['name']} ${suggestion['label']}'),
                                   onTap: () {
                                     // Set the locationController's text to the selected suggestion
                                     searchBarController.text =
@@ -133,7 +134,6 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
               ),
               const SizedBox(height: 50),
-           
               buildPreferenceSection<FillingType>(
                   'Filling', FillingType.values, selectedFilling),
               const SizedBox(height: 24),

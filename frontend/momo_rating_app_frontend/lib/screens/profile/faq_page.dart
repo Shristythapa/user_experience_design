@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:momo_rating_app_frontend/screens/profile/profile_page.dart';
+import 'package:photo_view/photo_view.dart';
 
 class Item {
   Item({
@@ -128,4 +129,6 @@ class _FaqPageState extends State<FaqPage> {
       ),
     );
   }
+
+ 
 }

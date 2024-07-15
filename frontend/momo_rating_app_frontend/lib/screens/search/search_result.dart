@@ -52,37 +52,41 @@ class _SearchResultState extends ConsumerState<SearchResult> {
         ),
         body: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: ListView.builder(
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            itemBuilder: (context, index) {
-              return InkWell(
-                onTap: () async {
-                  var userId =
-                      await ref.read(userSharedPrefsProvider).getUserDetails();
-                  userId.fold((l) {
-                    return SnackBarManager.showSnackBar(
-                        isError: true,
-                        message: "User not found",
-                        context: context);
-                  }, (r) {
-                    ref
-                        .read(moMoViewModelProvider.notifier)
-                        .getMomoById(state.momo[index].id!, r['_id'], context);
-                  });
-                },
-                child: buildCard(
-                    state.momo[index].momoImage ?? 'image/mmm.png',
-                    state.momo[index].fillingType,
-                    state.momo[index].cookType,
-                    state.momo[index].shop,
-                    state.momo[index].location,
-                    state.momo[index].momoPrice,
-                    state.momo[index].overallRating ?? 0.0),
-              );
-            },
-            itemCount: state.momo.length,
-          ),
+          child: state.momo.isEmpty
+              ? const Center(
+                  child: Text("No Momo found"),
+                )
+              : ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    return InkWell(
+                      onTap: () async {
+                        var userId = await ref
+                            .read(userSharedPrefsProvider)
+                            .getUserDetails();
+                        userId.fold((l) {
+                          return SnackBarManager.showSnackBar(
+                              isError: true,
+                              message: "User not found",
+                              context: context);
+                        }, (r) {
+                          ref.read(moMoViewModelProvider.notifier).getMomoById(
+                              state.momo[index].id!, r['_id'], context);
+                        });
+                      },
+                      child: buildCard(
+                          state.momo[index].momoImage ?? 'image/mmm.png',
+                          state.momo[index].fillingType,
+                          state.momo[index].cookType,
+                          state.momo[index].shop,
+                          state.momo[index].location,
+                          state.momo[index].momoPrice,
+                          state.momo[index].overallRating ?? 0.0),
+                    );
+                  },
+                  itemCount: state.momo.length,
+                ),
         ),
       ),
     );
@@ -125,14 +129,14 @@ Widget buildCard(String image, String title, String cook, String shop,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Column(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         Text(
-                          RegExp(r'\.(.*?)\}').firstMatch(title) != null
-                              ? "${RegExp(r'\.(.*?)\}').firstMatch(title)!.group(1)!} ${RegExp(r'\.(.*?)\}').firstMatch(cook)!.group(1)!}"
+                          RegExp(r'\.(.*)').firstMatch(title) != null
+                              ? "${RegExp(r'\.(.*)').firstMatch(title)!.group(1)!} ${RegExp(r'\.(.*)').firstMatch(cook)!.group(1)!}"
                               : '',
                           style: const TextStyle(
                               fontWeight: FontWeight.w600, fontSize: 12),
@@ -159,18 +163,25 @@ Widget buildCard(String image, String title, String cook, String shop,
                           style: const TextStyle(
                               fontWeight: FontWeight.w600, fontSize: 12),
                         ),
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.location_on,
-                              size: 20,
-                            ),
-                            Text(
-                              location,
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.w600, fontSize: 12),
-                            ),
-                          ],
+                        SizedBox(
+                          width: 120,
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.location_on,
+                                size: 20,
+                              ),
+                              Expanded(
+                                child: Text(
+                                  overflow: TextOverflow.ellipsis,
+                                  location,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 12),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     )

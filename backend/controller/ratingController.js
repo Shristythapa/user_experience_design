@@ -111,7 +111,7 @@ const addRating = async (req, res) => {
 
 const deleteRating = async (req, res) => {
   const { id } = req.params; // Assuming ratingId is passed as a parameter
-
+ console.log(id);
   try {
     // Find the rating by ID
     const rating = await Rating.findById(id);

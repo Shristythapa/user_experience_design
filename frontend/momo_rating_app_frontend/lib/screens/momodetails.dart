@@ -157,31 +157,49 @@ class _MoMoDetailsState extends ConsumerState<MoMoDetails> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    Row(
-                      children: [
-                        const Icon(Icons.restaurant, size: 20),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 10),
-                          child: Text(
-                            widget.moApiModel.shop,
-                            style: const TextStyle(
-                                fontSize: 15, fontWeight: FontWeight.w500),
+                    SizedBox(
+                      width: 150,
+                      child: Row(
+                        children: [
+                          const Icon(Icons.restaurant, size: 20),
+                          const SizedBox(width: 10),
+                          Flexible(
+                            child: Wrap(
+                              children: [
+                                Text(
+                                  widget.moApiModel.shop,
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        )
-                      ],
+                        ],
+                      ),
                     ),
-                    Row(
-                      children: [
-                        const Icon(Icons.location_on, size: 20),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 10),
-                          child: Text(
-                            widget.moApiModel.location,
-                            style: const TextStyle(
-                                fontSize: 15, fontWeight: FontWeight.w500),
+                    SizedBox(
+                      width: 180,
+                      child: Row(
+                        children: [
+                          const Icon(Icons.location_on, size: 20),
+                          const SizedBox(width: 10),
+                          Flexible(
+                            child: Wrap(
+                              children: [
+                                Text(
+                                  widget.moApiModel.location,
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        )
-                      ],
+                        ],
+                      ),
                     )
                   ],
                 ),
@@ -227,17 +245,15 @@ class _MoMoDetailsState extends ConsumerState<MoMoDetails> {
                       backgroundColor: WidgetStateProperty.resolveWith<Color>(
                           (Set<WidgetState> states) {
                         if (states.contains(WidgetState.hovered)) {
-                          return const Color(
-                              0xff2C8C24);
+                          return const Color(0xff2C8C24);
                         } else {
-                          return const Color(0xff43B13A); 
+                          return const Color(0xff43B13A);
                         }
                       }),
                       overlayColor: WidgetStateProperty.resolveWith<Color>(
                           (Set<WidgetState> states) {
                         if (states.contains(WidgetState.pressed)) {
-                          return const Color(
-                              0xff1F6B18); 
+                          return const Color(0xff1F6B18);
                         }
                         return Colors.transparent;
                       }),

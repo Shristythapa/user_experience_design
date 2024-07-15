@@ -49,7 +49,9 @@ class _AddMoMoState extends ConsumerState<AddMoMo> {
         const defaultImagePath = 'image/default_image.jpg';
         _img = File(defaultImagePath);
       } else {
-        _img = File(image.path);
+        setState(() {
+          _img = File(image.path);
+        });
       }
     } catch (e) {
       debugPrint(e.toString());
@@ -134,7 +136,7 @@ class _AddMoMoState extends ConsumerState<AddMoMo> {
                         InkWell(
                           onTap: () {
                             showModalBottomSheet(
-                              backgroundColor: const Color(0xFF6D3F83),
+                              backgroundColor: const Color(0xfffffdef),
                               context: context,
                               isScrollControlled: true,
                               shape: const RoundedRectangleBorder(
@@ -233,7 +235,7 @@ class _AddMoMoState extends ConsumerState<AddMoMo> {
                                     final suggestion = suggestions[index];
                                     return ListTile(
                                       title: Text(suggestion['name']),
-                                      subtitle: Text('${suggestion['lable']}'),
+                                      // subtitle: Text('${suggestion['lable']}'),
                                       onTap: () {
                                         // Set the locationController's text to the selected suggestion
                                         locationController.text =

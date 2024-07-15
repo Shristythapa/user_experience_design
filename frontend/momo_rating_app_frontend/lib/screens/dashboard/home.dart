@@ -72,13 +72,6 @@ class _DashboardState extends ConsumerState<Dashboard> {
             context: context);
         ref.read(userViewModelProvider.notifier).resetState();
       }
-      // if (reviewState.message.isNotEmpty && reviewState.showMessage) {
-      //   SnackBarManager.showSnackBar(
-      //       isError: reviewState.isError,
-      //       message: reviewState.message,
-      //       context: context);
-      //   ref.read(reviewViewModelProvider.notifier).resetState();
-      // }
     });
 
     return SafeArea(
@@ -211,7 +204,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
                               context: context);
                         }, (r) {
                           ref.read(moMoViewModelProvider.notifier).getMomoById(
-                              state.momo[index].id!, r['_id'], context);
+                              popularState.momo[index].id!, r['_id'], context);
                         });
                       },
                       child: buildCard(

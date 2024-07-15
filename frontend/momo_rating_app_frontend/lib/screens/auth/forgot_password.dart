@@ -178,6 +178,10 @@ class _ForgotPasswordState extends ConsumerState<ForgotPassword> {
                                     child: const Text(
                                       "Go to login?",
                                       style: TextStyle(
+                                        decoration: TextDecoration.underline,
+                                        decorationColor: Color(0xffFFA70B),
+                                        decorationThickness: 2,
+                                        color: Color(0xffFFA70B),
                                         fontFamily: 'roboto',
                                         fontWeight: FontWeight.w500,
                                       ),

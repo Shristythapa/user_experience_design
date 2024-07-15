@@ -147,7 +147,7 @@ Widget buildReviewCard(
         ),
       ),
       const SizedBox(
-        height: 20,
+        height: 10,
       )
     ],
   );

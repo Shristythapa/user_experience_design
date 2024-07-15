@@ -127,14 +127,6 @@ const getMomoById = async (req, res) => {
     const { userId, momoId } = req.query;
 
     console.log("get momo by id..");
-    // Find the momo by ID and populate reviews
-    // const momo = await Momo.findById(momoId).populate("reviews").exec();
-    // if (!momo) {
-    //   return res.status(404).json({
-    //     success: false,
-    //     message: "Momo not found",
-    //   });
-    // }
 
     const momo = await Momo.findById(momoId)
       .populate({
@@ -146,7 +138,6 @@ const getMomoById = async (req, res) => {
       })
       .exec();
 
-    // Check if the momo is saved by the user
     const savedMomo = await SavedMomo.findOne({ userId, momoId });
 
     res.status(200).json({
@@ -154,7 +145,7 @@ const getMomoById = async (req, res) => {
       message: "Get momo by id successful",
       data: {
         momo: momo,
-        momoSaved: !!savedMomo, // momoSaved is true if savedMomo exists, false otherwise
+        momoSaved: !!savedMomo,
       },
     });
   } catch (err) {
@@ -227,13 +218,16 @@ const getRatingsByUser = async (req, res) => {
   const { id } = req.params; // Assuming userId is passed as a parameter
   try {
     // Fetch all momos and populate their reviews
-    const momos = await Momo.find().populate({
-      path: "reviews",
-      model: "rating",
-      select:
-        "userId overallRating fillingAmount sizeOfMomo sauceVariety aesthectic spiceLevel priceValue review",
-    });
-
+    const momos = await Momo.find()
+      .populate({
+        path: "reviews",
+        populate: {
+          path: "userId",
+          select: "userName profileImageUrl",
+        },
+      })
+      .exec();
+    console.log(momos);
     if (momos.length > 0) {
       // Filter and populate ratings that match the userId
       const filteredRatings = momos
@@ -245,7 +239,7 @@ const getRatingsByUser = async (req, res) => {
           cookType: momo.cookType,
           momoImage: momo.momoImage,
           ratings: momo.reviews.filter(
-            (review) => review.userId.toString() === id
+            (review) => review.userId._id.toString() === id
           ),
         }))
         .filter((momo) => momo.ratings.length > 0); // Remove momos with empty ratings
@@ -282,14 +276,16 @@ const getRatingById = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const momo = await Momo.findOne({ reviews: id }).populate({
-      path: "reviews",
-      match: { _id: id },
-      model: "rating",
-      select:
-        "userId overallRating fillingAmount sizeOfMomo sauceVariety aesthectic spiceLevel priceValue review",
-    });
-
+    const momo = await Momo.findOne({ reviews: id })
+      .populate({
+        path: "reviews",
+        populate: {
+          path: "userId",
+          select: "userName profileImageUrl",
+        },
+      })
+      .exec();
+    console.log(momo);
     if (momo) {
       const rating = momo.reviews[0];
 
@@ -341,6 +337,13 @@ const getAllMomo = async (req, res) => {
   }
 };
 
+function stripCurlyBraces(value) {
+  if (Array.isArray(value)) {
+    return value.map((item) => item.replace(/[{}]/g, ""));
+  }
+  return value.replace(/[{}]/g, "");
+}
+
 const searchMomo = async (req, res) => {
   try {
     console.log(req.body);
@@ -358,19 +361,16 @@ const searchMomo = async (req, res) => {
       );
     }
 
-    // Add fillingType to search criteria if filling is an array
-    if (
-      filling !== null &&
-      (Array.isArray(filling) ? filling.length > 0 : true)
-    ) {
+    // Add fillingType to search criteria if filling is an array or a string
+    if (filling !== null && filling !== undefined) {
       console.log("filling added to search criteria");
-      searchCriteria.push({ fillingType: { $in: filling } });
+      searchCriteria.push({ fillingType: { $in: stripCurlyBraces(filling) } });
     }
 
-    // Add cookType to search criteria if cook is an array
-    if (cook !== null && (Array.isArray(cook) ? cook.length > 0 : true)) {
+    // Add cookType to search criteria if cook is an array or a string
+    if (cook !== null && cook !== undefined) {
       console.log("cook type added to search criteria");
-      searchCriteria.push({ cookType: { $in: cook } });
+      searchCriteria.push({ cookType: { $in: stripCurlyBraces(cook) } });
     }
 
     console.log("Search Criteria: ", searchCriteria);
@@ -393,6 +393,7 @@ const searchMomo = async (req, res) => {
       data: momos,
     });
   } catch (error) {
+    console.log(error);
     res.status(500).json({
       success: false,
       message: "An error occurred while searching for momos",

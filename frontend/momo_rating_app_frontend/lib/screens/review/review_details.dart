@@ -73,31 +73,49 @@ class _ReviewDetailsState extends ConsumerState<ReviewDetails> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    Row(
-                      children: [
-                        const Icon(Icons.restaurant, size: 20),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 10),
-                          child: Text(
-                            widget.review.shop!,
-                            style: const TextStyle(
-                                fontSize: 15, fontWeight: FontWeight.w500),
+                    SizedBox(
+                      width: 150,
+                      child: Row(
+                        children: [
+                          const Icon(Icons.restaurant, size: 20),
+                          const SizedBox(width: 10),
+                          Flexible(
+                            child: Wrap(
+                              children: [
+                                Text(
+                                  widget.review.shop!,
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        )
-                      ],
+                        ],
+                      ),
                     ),
-                    Row(
-                      children: [
-                        const Icon(Icons.location_on, size: 20),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 10),
-                          child: Text(
-                            widget.review.location!,
-                            style: const TextStyle(
-                                fontSize: 15, fontWeight: FontWeight.w500),
+                    SizedBox(
+                      width: 180,
+                      child: Row(
+                        children: [
+                          const Icon(Icons.location_on, size: 20),
+                          const SizedBox(width: 10),
+                          Flexible(
+                            child: Wrap(
+                              children: [
+                                Text(
+                                  widget.review.location!,
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        )
-                      ],
+                        ],
+                      ),
                     )
                   ],
                 ),
@@ -154,7 +172,7 @@ class _ReviewDetailsState extends ConsumerState<ReviewDetails> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Text(
-                            "Reviews",
+                            "Review",
                             style: TextStyle(
                                 fontSize: 15, fontWeight: FontWeight.w500),
                           ),
@@ -212,10 +230,9 @@ class _ReviewDetailsState extends ConsumerState<ReviewDetails> {
             children: [
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      Colors.red, 
+                  backgroundColor: Colors.red,
                   shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.zero, 
+                    borderRadius: BorderRadius.zero,
                   ),
                 ),
                 onPressed: () {

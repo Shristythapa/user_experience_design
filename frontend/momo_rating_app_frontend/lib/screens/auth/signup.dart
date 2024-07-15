@@ -137,7 +137,7 @@ class _SignUpState extends ConsumerState<SignUp> {
                               InkWell(
                                 onTap: () {
                                   showModalBottomSheet(
-                                    backgroundColor: Colors.white,
+                                    backgroundColor: const Color(0xfffffdef),
                                     context: context,
                                     isScrollControlled: true,
                                     shape: const RoundedRectangleBorder(
@@ -371,10 +371,12 @@ class _SignUpState extends ConsumerState<SignUp> {
                                   child: const Text(
                                     "Already have an account?",
                                     style: TextStyle(
-                                      // color: Color.fromARGB(255, 141, 125, 164),
-                                      fontFamily: 'roboto',
-                                      fontWeight: FontWeight.w500,
-                                    ),
+                                        fontFamily: 'roboto',
+                                        fontWeight: FontWeight.w500,
+                                        decoration: TextDecoration.underline,
+                                        decorationColor: Color(0xffFFA70B),
+                                        decorationThickness: 2,
+                                        color: Color(0xffFFA70B)),
                                   ),
                                   onTap: () {
                                     Navigator.of(context).pop();

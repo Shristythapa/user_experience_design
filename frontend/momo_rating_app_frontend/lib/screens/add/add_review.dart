@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:momo_rating_app_frontend/core/model/auth/user_model.dart';
 import 'package:momo_rating_app_frontend/core/model/momo/review_model.dart';
 import 'package:momo_rating_app_frontend/core/shared_pref/user_shared_prefs.dart';
 import 'package:momo_rating_app_frontend/core/utils/snackbar.dart';
@@ -293,18 +294,15 @@ class _AddReviewState extends ConsumerState<AddReview> {
                               WidgetStateProperty.resolveWith<Color>(
                                   (Set<WidgetState> states) {
                             if (states.contains(WidgetState.hovered)) {
-                              return const Color(
-                                  0xff2C8C24); 
+                              return const Color(0xff2C8C24);
                             } else {
-                              return const Color(
-                                  0xff43B13A); 
+                              return const Color(0xff43B13A);
                             }
                           }),
                           overlayColor: WidgetStateProperty.resolveWith<Color>(
                               (Set<WidgetState> states) {
                             if (states.contains(WidgetState.pressed)) {
-                              return const Color(
-                                  0xff1F6B18);
+                              return const Color(0xff1F6B18);
                             }
                             return Colors.transparent;
                           }),
@@ -323,7 +321,11 @@ class _AddReviewState extends ConsumerState<AddReview> {
                                 .read(reviewViewModelProvider.notifier)
                                 .addRating(
                                     review: Review(
-                                        userId: r['_id'],
+                                        userId: User(
+                                            userId: r['_id'],
+                                            userName: r['userName'],
+                                            profileImageUrl:
+                                                r['profleImageUrl']),
                                         momoId: widget.id,
                                         overallRating: overallTaste,
                                         fillingAmount: fillingAmount,
